@@ -1,4 +1,5 @@
 ﻿using Mapster;
+using Microsoft.AspNetCore.Identity;
 using Stpm.Core.DTO.AppUser;
 using Stpm.Core.DTO.Comment;
 using Stpm.Core.DTO.Notification;
@@ -33,9 +34,9 @@ namespace Stpm.WebApi.Mapsters;
 
 public class MapsterConfiguration : IRegister
 {
-	public void Register(TypeAdapterConfig config)
-	{
-		config.NewConfig<AppUser, AppUserDto>();
+    public void Register(TypeAdapterConfig config)
+    {
+        config.NewConfig<AppUser, AppUserDto>();
 		config.NewConfig<AppUser, AppUserItem>()
 			  .Map(dest => dest.PostCount, src => src.Posts == null ? 0 : src.Posts.Count)
 			  .Map(dest => dest.TopicCount, src => src.Topics == null ? 0 : src.Topics.Count)
@@ -45,8 +46,10 @@ public class MapsterConfiguration : IRegister
 
         config.NewConfig<Comment, CommentDto>();
 		config.NewConfig<Comment, CommentItem>()
-			  .Map(dest => dest.UserName, src => src.User.FullName)
-			  .Map(dest => dest.UserMSSV, src => src.User.MSSV);
+			  .Map(dest => dest.FullName, src => src.User.FullName)
+			  .Map(dest => dest.UserMSSV, src => src.User.MSSV)
+			  .Map(dest => dest.UserGradeName, src => src.User.GradeName)
+              .Map(dest => dest.Mark, src => src.User.UserTopicRatings.FirstOrDefault(u => u.UserId == src.UserId).Mark);
 
         config.NewConfig<Notification, NotificationDto>();
         config.NewConfig<Notification, NotificationItem>()
@@ -62,7 +65,6 @@ public class MapsterConfiguration : IRegister
         config.NewConfig<Post, PostDto>();
 		config.NewConfig<Post, PostItem>()
 			  .Map(dest => dest.AuthorName, src => src.User.FullName)
-			  .Map(dest => dest.TopicName, src => src.Topic.TopicName)
               .Map(dest => dest.Tags, src => src.Tags.Select(t => t.Name))
               .Map(dest => dest.TagCount, src => src.Tags.Count)
               .Map(dest => dest.CommentCount, src => src.Comments.Count)
@@ -70,6 +72,7 @@ public class MapsterConfiguration : IRegister
               .Map(dest => dest.PostVideoCount, src => src.PostVideos.Count);
 
         config.NewConfig<RankAward, RankAwardDto>();
+        config.NewConfig<RankAwardItem, RankAward>();
         config.NewConfig<RankAward, RankAwardItem>()
               .Map(dest => dest.TopicRankName, src => src.TopicRank.RankName)
               .Map(dest => dest.SpecificAwardCount, src => src.SpecificAwards.Count);
@@ -91,7 +94,7 @@ public class MapsterConfiguration : IRegister
         config.NewConfig<Topic, TopicItem>()
               .Map(dest => dest.AwardName, src => src.SpecificAward.RankAward.AwardName)
               .Map(dest => dest.TopicRankName, src => src.TopicRank.RankName)
-              .Map(dest => dest.PostCount, src => src.Posts.Count)
+              .Map(dest => dest.LeaderName, src => src.Leader.FullName)
               .Map(dest => dest.TopicPhotoCount, src => src.TopicPhotos.Count)
               .Map(dest => dest.TopicVideoCount, src => src.TopicVideos.Count)
               .Map(dest => dest.UserCount, src => src.Users.Count)

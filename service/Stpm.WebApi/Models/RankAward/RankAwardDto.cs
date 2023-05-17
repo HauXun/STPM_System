@@ -7,17 +7,17 @@ public partial class RankAwardDto
 {
     public int Id { get; set; }
 
-    public string AwardName { get; set; } = null!;
+    public string AwardName { get; set; }
 
-    public string UrlSlug { get; set; } = null!;
+    public string UrlSlug { get; set; }
 
     public string ShortDescription { get; set; }
 
-    public string Description { get; set; } = null!;
+    public string Description { get; set; }
 
     public int TopicRankId { get; set; }
 
     public virtual ICollection<SpecificAwardDto> SpecificAwards { get; set; } = new List<SpecificAwardDto>();
 
-    public virtual TopicRankDto TopicRank { get; set; } = null!;
+    public virtual TopicRankDto TopicRank { get; set; }
 }

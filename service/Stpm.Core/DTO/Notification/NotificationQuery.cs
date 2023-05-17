@@ -9,6 +9,7 @@ public partial class NotificationQuery
     public int? Month { get; set; }
     public int? Day { get; set; }
     public string LevelId { get; set; }
-    public string LevelName { get; set; }
+    public int? UserId { get; set; }
+    public int? TimelineId { get; set; }
     public bool? Viewed { get; set; }
 }

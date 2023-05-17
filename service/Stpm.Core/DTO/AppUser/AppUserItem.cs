@@ -2,7 +2,7 @@
 
 public class AppUserItem
 {
-    public string Id { get; set; } = default!;
+    public int Id { get; set; }
     public string UserName { get; set; }
     public string Email { get; set; }
     public string PhoneNumber { get; set; }
@@ -10,6 +10,10 @@ public class AppUserItem
     public string UrlSlug { get; set; }
     public DateTime JoinedDate { get; set; }
     public string MSSV { get; set; }
+    public string FullName { get; set; }
+    public string GradeName { get; set; }
+    public bool LockEnable { get; set; }
+    public string[] Roles { get; set; }
 
     public int PostCount { get; set; }
     public int TopicCount { get; set; }

@@ -12,7 +12,7 @@ public partial class TopicRank : IEntity<int>
 
     public string ShortDescription { get; set; }
 
-    public string? Description { get; set; }
+    public string Description { get; set; }
 
     public virtual ICollection<RankAward> RankAwards { get; set; } = new List<RankAward>();
 

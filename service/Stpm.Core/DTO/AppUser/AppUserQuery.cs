@@ -10,6 +10,8 @@ public class AppUserQuery
     public int? Year { get; set; }
     public int? Month { get; set; }
     public string MSSV { get; set; }
+    public string FullName { get; set; }
+    public string GradeName { get; set; }
     public string PostSlug { get; set; }
     public string TopicSlug { get; set; }
 

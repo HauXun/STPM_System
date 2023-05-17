@@ -2,7 +2,7 @@
 
 namespace Stpm.WebApi.Models.RankAward;
 
-public class RankAwardFilterModel
+public class RankAwardFilterModel : PagingModel
 {
     [DisplayName("Từ khoá")]
     public string Keyword { get; set; }

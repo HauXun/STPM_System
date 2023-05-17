@@ -182,6 +182,10 @@ namespace Stpm.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("GradeName")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<string>("ImageUrl")
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
@@ -422,9 +426,6 @@ namespace Stpm.Data.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
-                    b.Property<int>("TopicId")
-                        .HasColumnType("int");
-
                     b.Property<string>("UrlSlug")
                         .IsRequired()
                         .HasMaxLength(1000)
@@ -432,15 +433,12 @@ namespace Stpm.Data.Migrations
                         .HasColumnType("varchar(1000)");
 
                     b.Property<int>("UserId")
-                        .HasMaxLength(450)
                         .HasColumnType("int");
 
                     b.Property<int>("ViewCount")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("TopicId");
 
                     b.HasIndex("UserId");
 
@@ -501,13 +499,15 @@ namespace Stpm.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("DueDate")
-                        .HasColumnType("smalldatetime");
-
                     b.Property<string>("ShortDescription")
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("ShowOn")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -556,6 +556,46 @@ namespace Stpm.Data.Migrations
                     b.ToTable("RankAward", (string)null);
                 });
 
+            modelBuilder.Entity("Stpm.Core.Entities.RefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("ExpiredAt")
+                        .HasColumnType("smalldatetime");
+
+                    b.Property<bool>("IsRevoked")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsUsed")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime>("IssuedAt")
+                        .HasColumnType("smalldatetime");
+
+                    b.Property<string>("JwtId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens");
+                });
+
             modelBuilder.Entity("Stpm.Core.Entities.SpecificAward", b =>
                 {
                     b.Property<int>("Id")
@@ -566,6 +606,11 @@ namespace Stpm.Data.Migrations
 
                     b.Property<int>("BonusPrize")
                         .HasColumnType("int");
+
+                    b.Property<bool>("Passed")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<int>("RankAwardId")
                         .HasColumnType("int");
@@ -652,8 +697,17 @@ namespace Stpm.Data.Migrations
                     b.Property<bool>("Cancel")
                         .HasColumnType("bit");
 
+                    b.Property<DateTime?>("CancelDate")
+                        .HasColumnType("smalldatetime");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("ForceLock")
                         .HasColumnType("bit");
+
+                    b.Property<int>("LeaderId")
+                        .HasColumnType("int");
 
                     b.Property<string>("OutlineUrl")
                         .HasMaxLength(1000)
@@ -664,6 +718,13 @@ namespace Stpm.Data.Migrations
                         .HasColumnType("smalldatetime");
 
                     b.Property<string>("RegisTemp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Registered")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ShortDescription")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("SpecificAwardId")
@@ -684,6 +745,8 @@ namespace Stpm.Data.Migrations
                         .HasColumnType("varchar(200)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LeaderId");
 
                     b.HasIndex("SpecificAwardId");
 
@@ -891,7 +954,7 @@ namespace Stpm.Data.Migrations
                     b.HasKey("UserId", "TopicId")
                         .HasName("PK_UserTopic");
 
-                    b.HasIndex("TopicId");
+                    b.HasIndex(new[] { "TopicId" }, "IX_UserTopicRegis_TopicId");
 
                     b.ToTable("UserTopicRegis", (string)null);
                 });
@@ -1019,21 +1082,12 @@ namespace Stpm.Data.Migrations
 
             modelBuilder.Entity("Stpm.Core.Entities.Post", b =>
                 {
-                    b.HasOne("Stpm.Core.Entities.Topic", "Topic")
-                        .WithMany("Posts")
-                        .HasForeignKey("TopicId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_Post_Topic");
-
                     b.HasOne("Stpm.Core.Entities.AppUser", "User")
                         .WithMany("Posts")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_Post_Users");
-
-                    b.Navigation("Topic");
 
                     b.Navigation("User");
                 });
@@ -1074,6 +1128,18 @@ namespace Stpm.Data.Migrations
                     b.Navigation("TopicRank");
                 });
 
+            modelBuilder.Entity("Stpm.Core.Entities.RefreshToken", b =>
+                {
+                    b.HasOne("Stpm.Core.Entities.AppUser", "User")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_RefreshTokens_Users");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Stpm.Core.Entities.SpecificAward", b =>
                 {
                     b.HasOne("Stpm.Core.Entities.RankAward", "RankAward")
@@ -1100,6 +1166,13 @@ namespace Stpm.Data.Migrations
 
             modelBuilder.Entity("Stpm.Core.Entities.Topic", b =>
                 {
+                    b.HasOne("Stpm.Core.Entities.AppUser", "Leader")
+                        .WithMany("TopicLeaders")
+                        .HasForeignKey("LeaderId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired()
+                        .HasConstraintName("FK_Topic_Users");
+
                     b.HasOne("Stpm.Core.Entities.SpecificAward", "SpecificAward")
                         .WithMany("Topics")
                         .HasForeignKey("SpecificAwardId")
@@ -1111,6 +1184,8 @@ namespace Stpm.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_Topic_TopicRank");
+
+                    b.Navigation("Leader");
 
                     b.Navigation("SpecificAward");
 
@@ -1240,6 +1315,10 @@ namespace Stpm.Data.Migrations
 
                     b.Navigation("Posts");
 
+                    b.Navigation("RefreshTokens");
+
+                    b.Navigation("TopicLeaders");
+
                     b.Navigation("UserNotifies");
 
                     b.Navigation("UserTopicRatings");
@@ -1281,8 +1360,6 @@ namespace Stpm.Data.Migrations
 
             modelBuilder.Entity("Stpm.Core.Entities.Topic", b =>
                 {
-                    b.Navigation("Posts");
-
                     b.Navigation("TopicPhotos");
 
                     b.Navigation("TopicVideos");

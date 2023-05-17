@@ -7,12 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="App\zuff1mhm.32h~" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Stpm.Core\Stpm.Core.csproj" />
     <ProjectReference Include="..\Stpm.Data\Stpm.Data.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Blogs\" />
     <Folder Include="Rss\" />
   </ItemGroup>
 

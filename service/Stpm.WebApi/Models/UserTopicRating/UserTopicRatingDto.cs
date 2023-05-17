@@ -5,13 +5,13 @@ namespace Stpm.WebApi.Models.UserTopicRating;
 
 public partial class UserTopicRatingDto
 {
-    public string UserId { get; set; } = null!;
+    public int UserId { get; set; }
 
     public int TopicId { get; set; }
 
     public float? Mark { get; set; }
 
-    public virtual TopicDto Topic { get; set; } = null!;
+    //public virtual TopicDto Topic { get; set; }
 
-    public virtual AppUserDto User { get; set; } = null!;
+    //public virtual AppUserDto User { get; set; }
 }

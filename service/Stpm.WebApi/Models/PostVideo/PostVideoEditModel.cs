@@ -3,7 +3,7 @@
 public class PostVideoEditModel
 {
     public int Id { get; set; }
-    public string VideoUrl { get; set; } = null!;
+    public string VideoUrl { get; set; }
     public IFormFile VideoFile { get; set; }
 
     public static async ValueTask<PostVideoEditModel> BindAsync(HttpContext context)

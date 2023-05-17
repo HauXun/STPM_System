@@ -2,7 +2,7 @@
 
 public partial class UserTopicRatingItem
 {
-    public string UserId { get; set; }
+    public int UserId { get; set; }
     public int TopicId { get; set; }
     public string UserName { get; set; }
     public int TopicName { get; set; }

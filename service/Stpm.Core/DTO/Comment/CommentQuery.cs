@@ -8,8 +8,9 @@ public partial class CommentQuery
     public int? Month { get; set; }
     public int? Day { get; set; }
     public string TopicSlug { get; set; }
+    public string PostSlug { get; set; }
     public string UserSlug { get; set; }
     public int? TopicId { get; set; }
     public int? PostId { get; set; }
-    public string UserId { get; set; }
+    public int? UserId { get; set; }
 }

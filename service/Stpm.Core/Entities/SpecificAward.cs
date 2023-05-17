@@ -12,6 +12,8 @@ public partial class SpecificAward : IEntity<int>
 
     public int RankAwardId { get; set; }
 
+    public bool Passed { get; set; }
+
     public virtual RankAward RankAward { get; set; }
 
     public virtual ICollection<Topic> Topics { get; set; } = new List<Topic>();

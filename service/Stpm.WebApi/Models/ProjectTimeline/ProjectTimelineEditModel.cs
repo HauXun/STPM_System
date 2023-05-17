@@ -3,9 +3,9 @@
 public class ProjectTimelineEditModel
 {
     public int Id { get; set; }
-    public string Title { get; set; } = null!;
-    public string ShortDescription { get; set; } = null!;
-    public DateTime DueDate { get; set; }
+    public string Title { get; set; }
+    public string ShortDescription { get; set; }
+    public bool ShowOn { get; set; }
 
     public static async ValueTask<ProjectTimelineEditModel> BindAsync(HttpContext context)
     {
@@ -15,7 +15,7 @@ public class ProjectTimelineEditModel
             Id = int.Parse(form["Id"]),
             Title = form["Title"],
             ShortDescription = form["ShortDescription"],
-            DueDate = Convert.ToDateTime(form["DueDate"]),
+            ShowOn = form["ShowOn"] != "false",
         };
     }
 }

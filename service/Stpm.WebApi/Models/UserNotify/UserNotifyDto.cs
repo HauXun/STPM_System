@@ -5,13 +5,13 @@ namespace Stpm.WebApi.Models.UserNotify;
 
 public partial class UserNotifyDto
 {
-    public string UserId { get; set; } = null!;
+    public int UserId { get; set; }
 
     public int NotifyId { get; set; }
 
     public bool Viewed { get; set; }
 
-    public virtual NotificationDto Notify { get; set; } = null!;
+    //public virtual NotificationDto Notify { get; set; }
 
-    public virtual AppUserDto User { get; set; } = null!;
+    //public virtual AppUserDto User { get; set; }
 }

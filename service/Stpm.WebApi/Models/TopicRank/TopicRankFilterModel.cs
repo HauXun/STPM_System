@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace Stpm.WebApi.Models.TopicRank;
 
-public class TopicRankFilterModel
+public class TopicRankFilterModel : PagingModel
 {
     [DisplayName("Từ khoá")]
     public string Keyword { get; set; }

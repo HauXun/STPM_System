@@ -13,7 +13,9 @@ public partial class SpecificAwardDto
 
     public int RankAwardId { get; set; }
 
-    public virtual RankAwardDto RankAward { get; set; } = null!;
+    public bool Passed { get; set; }
 
-    public virtual ICollection<TopicDto> Topics { get; set; } = new List<TopicDto>();
+    //public virtual RankAwardDto RankAward { get; set; }
+
+    //public virtual ICollection<TopicDto> Topics { get; set; } = new List<TopicDto>();
 }

@@ -19,18 +19,13 @@ public class PostFilterModel : PagingModel
     [DisplayName("Post-Slug")]
     public string PostSlug { get; set; }
     [DisplayName("Topic-Slug")]
-    public string TopicSlug { get; set; }
-    [DisplayName("User-Slug")]
     public string UserSlug { get; set; }
     [DisplayName("Tag-Slug")]
     public string TagSlug { get; set; }
     [DisplayName("Tác giả")]
     public int? UserId { get; set; }
-    [DisplayName("Đề tài")]
-    public int? TopicId { get; set; }
 
     public IEnumerable<SelectListItem> UserList { get; set; }
-    public IEnumerable<SelectListItem> TopicList { get; set; }
     public IEnumerable<SelectListItem> MonthList { get; set; }
 
     public PostFilterModel()

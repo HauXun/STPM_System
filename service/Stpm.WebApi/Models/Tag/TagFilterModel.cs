@@ -2,7 +2,7 @@
 
 namespace Stpm.WebApi.Models.Tag;
 
-public class TagFilterModel
+public class TagFilterModel : PagingModel
 {
     [DisplayName("Từ khoá")]
     public string Keyword { get; set; }

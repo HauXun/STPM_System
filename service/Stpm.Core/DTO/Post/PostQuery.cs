@@ -7,10 +7,8 @@ public class PostQuery
     public int? Year { get; set; }
     public int? Month { get; set; }
     public int? Day { get; set; }
-    public string UserId { get; set; }
-    public int? TopicId { get; set; }
+    public int? UserId { get; set; }
     public string UserSlug { get; set; }
-    public string TopicUrl { get; set; }
     public string Tags { get; set; }
     public string PostSlug { get; set; }
     public string TagSlug { get; set; }

@@ -6,9 +6,9 @@ public class TopicVideoDto
 {
     public int Id { get; set; }
 
-    public string VideoUrl { get; set; } = null!;
+    public string VideoUrl { get; set; }
 
     public int TopicId { get; set; }
 
-    public virtual TopicDto Topic { get; set; } = null!;
+    //public virtual TopicDto Topic { get; set; }
 }

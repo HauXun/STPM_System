@@ -3,7 +3,7 @@
 public class NotifyAttachmentEditModel
 {
     public int Id { get; set; }
-    public string AttachmentUrl { get; set; } = null!;
+    public string AttachmentUrl { get; set; }
     public IFormFile AttachmentFile { get; set; }
 
     public static async ValueTask<NotifyAttachmentEditModel> BindAsync(HttpContext context)

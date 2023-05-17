@@ -4,6 +4,7 @@ public class CommentEditModel
 {
     public int Id { get; set; }
     public string Content { get; set; }
+    public int UserId { get; set; }
 
     public static async ValueTask<CommentEditModel> BindAsync(HttpContext context)
     {
@@ -12,6 +13,7 @@ public class CommentEditModel
         {
             Id = int.Parse(form["Id"]),
             Content = form["Content"],
+            UserId = int.Parse(form["UserId"]),
         };
     }
 }
