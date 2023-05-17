@@ -16,6 +16,8 @@ public partial class StpmDbContext : IdentityDbContext<AppUser, AppUserRole, int
     {
     }
 
+    public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
+
     public virtual DbSet<Comment> Comments { get; set; }
 
     public virtual DbSet<NotiLevel> NotiLevels { get; set; }

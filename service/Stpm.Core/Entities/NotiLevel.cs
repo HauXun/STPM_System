@@ -34,7 +34,7 @@ public partial class NotiLevel : IEntity<string>
 
     public byte Priority { get; set; }
 
-    public string? Description { get; set; }
+    public string Description { get; set; }
 
     public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 }

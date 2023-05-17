@@ -2,7 +2,6 @@
 using Stpm.WebApi.Models.PostPhoto;
 using Stpm.WebApi.Models.PostVideo;
 using Stpm.WebApi.Models.Tag;
-using Stpm.WebApi.Models.Topic;
 
 namespace Stpm.WebApi.Models.Post;
 
@@ -10,11 +9,11 @@ public partial class PostDto
 {
     public int Id { get; set; }
 
-    public string Title { get; set; } = null!;
+    public string Title { get; set; }
 
-    public string ShortDescription { get; set; } = null!;
+    public string ShortDescription { get; set; }
 
-    public string Description { get; set; } = null!;
+    public string Description { get; set; }
 
     public string Meta { get; set; }
 
@@ -28,13 +27,9 @@ public partial class PostDto
 
     public DateTime? ModifiedDate { get; set; }
 
-    public int TopicId { get; set; }
+    public int UserId { get; set; }
 
-    public string UserId { get; set; } = null!;
-
-    public virtual TopicDto Topic { get; set; } = null!;
-
-    public virtual AppUserDto User { get; set; } = null!;
+    public virtual AppUserDto User { get; set; }
 
     public virtual ICollection<TagDto> Tags { get; set; } = new List<TagDto>();
 

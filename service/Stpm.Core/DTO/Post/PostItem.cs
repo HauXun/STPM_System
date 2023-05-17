@@ -11,7 +11,6 @@ public class PostItem
     public int ViewCount { get; set; }
     public bool Published { get; set; }
     public DateTime PostedDate { get; set; }
-    public string TopicName { get; set; }
     public string AuthorName { get; set; }
     public IEnumerable<string> Tags { get; set; }
     public int TagCount { get; set; }

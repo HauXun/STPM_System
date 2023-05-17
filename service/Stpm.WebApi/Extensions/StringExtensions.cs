@@ -36,7 +36,7 @@ public static class StringExtensions
         if (string.IsNullOrWhiteSpace(text))
             return text;
 
-        text = text.Replace("Đ", "D").Replace("đ", "d");
+        text = text.Replace("Đ", "D").Replace("đ", "d").Replace("Đ", "D").Replace("đ", "d");
         text = text.Normalize(NormalizationForm.FormD);
         char[] chars = text
             .Where(c => CharUnicodeInfo.GetUnicodeCategory(c)

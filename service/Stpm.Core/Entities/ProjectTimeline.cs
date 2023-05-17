@@ -10,7 +10,7 @@ public partial class ProjectTimeline : IEntity<int>
 
     public string ShortDescription { get; set; }
 
-    public DateTime DueDate { get; set; }
+    public bool ShowOn { get; set; }
 
     public virtual ICollection<Timeline> Timelines { get; set; } = new List<Timeline>();
 }

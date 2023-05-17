@@ -27,6 +27,9 @@ internal class AppUserMapping : IEntityTypeConfiguration<AppUser>
         builder.Property(e => e.MSSV)
                .HasMaxLength(50);
 
+        builder.Property(e => e.GradeName)
+               .HasMaxLength(50);
+
         builder.HasMany(e => e.UserNotifies)
                .WithOne(e => e.User)
                .HasForeignKey(e => e.UserId);
@@ -54,6 +57,7 @@ internal class AppUserMapping : IEntityTypeConfiguration<AppUser>
                        j.HasKey("UserId", "TopicId")
                         .HasName("PK_UserTopic");
                        j.ToTable("UserTopicRegis");
+                       j.HasIndex(new[] { "TopicId" }, "IX_UserTopicRegis_TopicId");
                    });
     }
 }

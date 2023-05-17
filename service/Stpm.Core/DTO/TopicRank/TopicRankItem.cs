@@ -7,6 +7,7 @@ public partial class TopicRankItem
     public string UrlSlug { get; set; }
     public string ShortDescription { get; set; }
     public string Description { get; set; }
+    public int Year { get; set; }
     public int RankAwardCount { get; set; }
     public int TopicCount { get; set; }
 }

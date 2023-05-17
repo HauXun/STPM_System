@@ -10,6 +10,7 @@ public class AppUser : IdentityUser<int>, IEntity<int>
     public string UrlSlug { get; set; }
     public DateTime JoinedDate { get; set; }
     public string MSSV { get; set; }
+    public string GradeName { get; set; }
 
     public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
 
@@ -20,4 +21,8 @@ public class AppUser : IdentityUser<int>, IEntity<int>
     public virtual ICollection<UserTopicRating> UserTopicRatings { get; set; } = new List<UserTopicRating>();
 
     public virtual ICollection<Topic> Topics { get; set; } = new List<Topic>();
+
+    public virtual ICollection<Topic> TopicLeaders { get; set; } = new List<Topic>();
+
+    public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 }

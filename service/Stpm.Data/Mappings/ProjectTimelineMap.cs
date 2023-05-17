@@ -10,9 +10,9 @@ public class ProjectTimelineMap : IEntityTypeConfiguration<ProjectTimeline>
     {
         builder.ToTable("ProjectTimeline");
 
-        builder.Property(e => e.DueDate)
-               .HasColumnType("smalldatetime")
-               .IsRequired();
+        builder.Property(p => p.ShowOn)
+               .IsRequired()
+               .HasDefaultValue(false);
 
         builder.Property(e => e.ShortDescription)
                .HasMaxLength(500)

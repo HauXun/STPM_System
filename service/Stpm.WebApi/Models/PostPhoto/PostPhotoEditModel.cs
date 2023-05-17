@@ -3,7 +3,7 @@
 public class PostPhotoEditModel
 {
     public int Id { get; set; }
-    public string ImageUrl { get; set; } = null!;
+    public string ImageUrl { get; set; }
     public IFormFile ImageFile { get; set; }
 
     public static async ValueTask<PostPhotoEditModel> BindAsync(HttpContext context)

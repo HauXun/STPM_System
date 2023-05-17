@@ -24,11 +24,7 @@ public partial class Post : IEntity<int>
 
     public DateTime? ModifiedDate { get; set; }
 
-    public int TopicId { get; set; }
-
     public int UserId { get; set; }
-
-    public virtual Topic Topic { get; set; }
 
     public virtual AppUser User { get; set; }
 

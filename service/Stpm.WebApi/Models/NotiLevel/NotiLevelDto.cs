@@ -28,13 +28,13 @@ public enum Level
 
 public partial class NotiLevelDto
 {
-    public string Id { get; set; } = null!;
+    public string Id { get; set; }
 
-    public string LevelName { get; set; } = null!;
+    public string LevelName { get; set; }
 
     public byte Priority { get; set; }
 
-    public string Description { get; set; } = null!;
+    public string Description { get; set; }
 
-    public virtual ICollection<NotificationDto> Notifications { get; set; } = new List<NotificationDto>();
+    //public virtual ICollection<NotificationDto> Notifications { get; set; } = new List<NotificationDto>();
 }

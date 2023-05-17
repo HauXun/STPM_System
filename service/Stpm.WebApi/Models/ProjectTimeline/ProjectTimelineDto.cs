@@ -6,11 +6,11 @@ public class ProjectTimelineDto
 {
     public int Id { get; set; }
 
-    public string Title { get; set; } = null!;
+    public string Title { get; set; }
 
-    public string ShortDescription { get; set; } = null!;
+    public string ShortDescription { get; set; }
 
-    public DateTime DueDate { get; set; }
+    public bool ShowOn { get; set; }
 
-    public virtual ICollection<TimelineDto> Timelines { get; set; } = new List<TimelineDto>();
+    //public virtual ICollection<TimelineDto> Timelines { get; set; } = new List<TimelineDto>();
 }

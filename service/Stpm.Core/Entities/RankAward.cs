@@ -12,7 +12,7 @@ public partial class RankAward : IEntity<int>
 
     public string ShortDescription { get; set; }
 
-    public string? Description { get; set; }
+    public string Description { get; set; }
 
     public int TopicRankId { get; set; }
 

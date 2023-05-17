@@ -2,9 +2,19 @@ using Microsoft.Extensions.Logging;
 
 namespace Stpm.Services.Media;
 
+public enum MIMEType
+{
+    Picture,
+    Video,
+    Media
+}
+
 public class LocalFileSystemMediaManager : IMediaManager
 {
   private const string PictureFolder = "uploads/pictures/{0}{1}";
+  private const string VideoFolder = "uploads/videos/{0}{1}";
+  private const string MediaFolder = "uploads/media/{0}{1}";
+
   private readonly ILogger<LocalFileSystemMediaManager> _logger;
 
   public LocalFileSystemMediaManager(ILogger<LocalFileSystemMediaManager> logger)
@@ -31,7 +41,7 @@ public class LocalFileSystemMediaManager : IMediaManager
     }
   }
 
-  public async Task<string> SaveFileAsync(Stream buffer, string originalFileName, string contentType, CancellationToken cancellationToken = default)
+  public async Task<string> SaveFileAsync(Stream buffer, string originalFileName, string contentType, MIMEType type = MIMEType.Picture, CancellationToken cancellationToken = default)
   {
     try
     {
@@ -39,7 +49,7 @@ public class LocalFileSystemMediaManager : IMediaManager
         return null;
 
       var fileExt = Path.GetExtension(originalFileName).ToLower();
-      var returnedFilePath = CreateFilePath(fileExt, contentType.ToLower());
+      var returnedFilePath = CreateFilePath(fileExt, type, contentType.ToLower());
       var fullPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "wwwroot", returnedFilePath));
 
       // Make suare we are at beginning of source stream
@@ -57,8 +67,23 @@ public class LocalFileSystemMediaManager : IMediaManager
     }
   }
 
-  private string CreateFilePath(string fileExt, string contentType = null)
+  private string CreateFilePath(string fileExt, MIMEType type, string contentType = null)
   {
-    return string.Format(PictureFolder, Guid.NewGuid().ToString("N"), fileExt);
+    string path = string.Empty;
+
+    switch (type)
+    {
+        case MIMEType.Picture:
+            path = PictureFolder;
+            break;
+        case MIMEType.Video:
+            path = VideoFolder;
+            break;
+        case MIMEType.Media:
+            path = MediaFolder;
+            break;
+    }
+
+    return string.Format(path, Guid.NewGuid().ToString("N"), fileExt);
   }
 }

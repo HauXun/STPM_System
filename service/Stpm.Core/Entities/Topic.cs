@@ -8,19 +8,29 @@ public partial class Topic : IEntity<int>
 
     public string TopicName { get; set; }
 
+    public string ShortDescription { get; set; }
+
+    public string Description { get; set; }
+
     public string UrlSlug { get; set; }
 
-    public string? OutlineUrl { get; set; }
+    public string OutlineUrl { get; set; }
 
     public DateTime RegisDate { get; set; }
 
+    public bool Registered { get; set; }
+
     public bool Cancel { get; set; }
+
+    public DateTime? CancelDate { get; set; }
 
     public bool ForceLock { get; set; }
 
-    public string? RegisTemp { get; set; }
+    public string RegisTemp { get; set; }
 
     public int TopicRankId { get; set; }
+
+    public int LeaderId { get; set; }
 
     public int? SpecificAwardId { get; set; }
 
@@ -28,9 +38,9 @@ public partial class Topic : IEntity<int>
 
     public virtual TopicRank TopicRank { get; set; }
 
-    public virtual ICollection<UserTopicRating> UserTopicRatings { get; set; } = new List<UserTopicRating>();
+    public virtual AppUser Leader { get; set; }
 
-    public virtual ICollection<Post> Posts { get; set; } = new List<Post>();
+    public virtual ICollection<UserTopicRating> UserTopicRatings { get; set; } = new List<UserTopicRating>();
 
     public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
 

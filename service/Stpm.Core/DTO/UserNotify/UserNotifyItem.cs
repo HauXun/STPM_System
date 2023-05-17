@@ -2,7 +2,7 @@
 
 public partial class UserNotifyItem
 {
-    public string UserId { get; set; }
+    public int UserId { get; set; }
     public int NotifyId { get; set; }
     public string UserName { get; set; }
     public string Title { get; set; }

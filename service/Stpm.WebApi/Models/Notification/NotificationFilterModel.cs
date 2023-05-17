@@ -4,7 +4,7 @@ using System.Globalization;
 
 namespace Stpm.WebApi.Models.Notification;
 
-public class NotificationFilterModel
+public class NotificationFilterModel : PagingModel
 {
     [DisplayName("Từ khoá")]
     public string Keyword { get; set; }
@@ -17,7 +17,11 @@ public class NotificationFilterModel
     [DisplayName("Ngày")]
     public int? Day { get; set; }
     [DisplayName("Độ ưu tiên")]
-    public int? LevelId { get; set; }
+    public string LevelId { get; set; }
+    [DisplayName("Người dùng")]
+    public int? UserId { get; set; }
+    [DisplayName("Timeline")]
+    public int? TimelineId { get; set; }
     [DisplayName("Đã xem")]
     public bool? Viewed { get; set; }
 

@@ -6,9 +6,9 @@ public class PostVideoDto
 {
     public int Id { get; set; }
 
-    public string VideoUrl { get; set; } = null!;
+    public string VideoUrl { get; set; }
 
     public int PostId { get; set; }
 
-    public virtual PostDto Post { get; set; } = null!;
+    //public virtual PostDto Post { get; set; }
 }

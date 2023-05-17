@@ -42,14 +42,7 @@ public class PostMap : IEntityTypeConfiguration<Post>
                .IsRequired();
 
         builder.Property(e => e.UserId)
-               .HasMaxLength(450)
                .IsRequired();
-
-        builder.HasOne(d => d.Topic)
-               .WithMany(p => p.Posts)
-               .HasForeignKey(d => d.TopicId)
-               .HasConstraintName("FK_Post_Topic")
-               .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(d => d.User)
                .WithMany(p => p.Posts)

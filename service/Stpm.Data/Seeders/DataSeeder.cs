@@ -35,6 +35,9 @@ public class DataSeeder : IDataSeeder
 
     private async Task RandomSeedData()
     {
+        var roles = await AddRoles();
+        await AddDefaultUsers();
+        var users = /*_dbContext.Users.Any() ? _dbContext.Users.ToList() :*/ await AddUsers(roles);
         var notiLevels = _dbContext.NotiLevels.Any() ? _dbContext.NotiLevels.ToList() : AddNotiLevels();
         var notifications = _dbContext.Notifications.Any() ? _dbContext.Notifications.ToList() : AddNotifications(notiLevels);
         var notifyAttachments = _dbContext.NotifyAttachments.Any() ? _dbContext.NotifyAttachments.ToList() : AddNotifyAttachments(notifications);
@@ -43,14 +46,11 @@ public class DataSeeder : IDataSeeder
         var topicRanks = _dbContext.TopicRanks.Any() ? _dbContext.TopicRanks.ToList() : AddTopicRanks();
         var rankAwards = _dbContext.RankAwards.Any() ? _dbContext.RankAwards.ToList() : AddRankAwards(topicRanks);
         var specificAwards = _dbContext.SpecificAwards.Any() ? _dbContext.SpecificAwards.ToList() : AddSpecificAwards(rankAwards);
-        var topics = _dbContext.Topics.Any() ? _dbContext.Topics.ToList() : AddTopics(topicRanks, specificAwards);
+        var topics = _dbContext.Topics.Any() ? _dbContext.Topics.ToList() : AddTopics(topicRanks, specificAwards, users);
         var topicPhotos = _dbContext.TopicPhotos.Any() ? _dbContext.TopicPhotos.ToList() : AddTopicPhotos(topics);
         var topicVideos = _dbContext.TopicVideos.Any() ? _dbContext.TopicVideos.ToList() : AddTopicVideos(topics);
-        var roles = await AddRoles();
-        await AddDefaultUsers();
-        var users = /*_dbContext.Users.Any() ? _dbContext.Users.ToList() : */await AddUsers(roles, topics);
         var tags = _dbContext.Tags.Any() ? _dbContext.Tags.ToList() : AddTags();
-        var posts = _dbContext.Posts.Any() ? _dbContext.Posts.ToList() : AddPosts(users, topics, tags);
+        var posts = _dbContext.Posts.Any() ? _dbContext.Posts.ToList() : AddPosts(users, tags);
         var postPhotos = _dbContext.PostPhotos.Any() ? _dbContext.PostPhotos.ToList() : AddPostPhotos(posts);
         var postVideos = _dbContext.PostVideos.Any() ? _dbContext.PostVideos.ToList() : AddPostVideos(posts);
         var topicComments = _dbContext.Comments.Any() ? _dbContext.Comments.ToList() : AddTopicComments(users, topics);
@@ -66,9 +66,9 @@ public class DataSeeder : IDataSeeder
         fakeComments.RuleFor(u => u.Content, f => f.Lorem.Sentence(10, 5));
         fakeComments.RuleFor(u => u.Date, f => f.Date.Between(new DateTime(2021, 5, 10), new DateTime(2023, 5, 10)));
         fakeComments.RuleFor(u => u.User, f => f.PickRandom(users));
-        fakeComments.RuleFor(u => u.Posts, f => f.PickRandomParam(posts));
+        fakeComments.RuleFor(u => u.Posts, f => f.PickRandom(posts, 2).ToList());
 
-        var comments = fakeComments.Generate(300);
+        var comments = fakeComments.Generate(50);
 
         _dbContext.Comments.AddRange(comments);
         _dbContext.SaveChanges();
@@ -83,7 +83,7 @@ public class DataSeeder : IDataSeeder
         fakeTimelines.RuleFor(u => u.ShortDescription, f => f.Lorem.Paragraph());
         fakeTimelines.RuleFor(u => u.DueDate, f => f.Date.Between(new DateTime(2021, 5, 10), new DateTime(2023, 5, 10)));
         fakeTimelines.RuleFor(u => u.Project, f => f.PickRandom(projectTimelines));
-        fakeTimelines.RuleFor(u => u.Notifies, f => f.PickRandomParam(notifications));
+        fakeTimelines.RuleFor(u => u.Notifies, f => f.PickRandom(notifications, 3).ToList());
 
         var timelines = fakeTimelines.Generate(100);
 
@@ -98,7 +98,7 @@ public class DataSeeder : IDataSeeder
         var fakeProjectTimelines = new Faker<ProjectTimeline>("vi");
         fakeProjectTimelines.RuleFor(u => u.Title, f => f.Lorem.Sentence());
         fakeProjectTimelines.RuleFor(u => u.ShortDescription, f => f.Lorem.Paragraph());
-        fakeProjectTimelines.RuleFor(u => u.DueDate, f => f.Date.Between(new DateTime(2021, 5, 10), new DateTime(2023, 5, 10)));
+        fakeProjectTimelines.RuleFor(u => u.ShowOn, f => false);
 
         var projectTimelines = fakeProjectTimelines.Generate(100);
 
@@ -139,7 +139,7 @@ public class DataSeeder : IDataSeeder
     private List<PostVideo> AddPostVideos(List<Post> posts)
     {
         var fakePostVideos = new Faker<PostVideo>("vi");
-        fakePostVideos.RuleFor(p => p.VideoUrl, f => f.Internet.Url());
+        fakePostVideos.RuleFor(p => p.VideoUrl, f => "https://youtu.be/mw9WcQo6aIY");
         fakePostVideos.RuleFor(p => p.Post, f => f.PickRandom(posts));
 
         var postVideos = fakePostVideos.Generate(100);
@@ -153,7 +153,7 @@ public class DataSeeder : IDataSeeder
     private List<TopicVideo> AddTopicVideos(List<Topic> topics)
     {
         var fakeTopicVideos = new Faker<TopicVideo>("vi");
-        fakeTopicVideos.RuleFor(p => p.VideoUrl, f => f.Internet.Url());
+        fakeTopicVideos.RuleFor(p => p.VideoUrl, f => "https://youtu.be/mw9WcQo6aIY");
         fakeTopicVideos.RuleFor(p => p.Topic, f => f.PickRandom(topics));
 
         var topicVideos = fakeTopicVideos.Generate(100);
@@ -219,6 +219,7 @@ public class DataSeeder : IDataSeeder
 
     private List<UserTopicRating> AddUserTopicRating(List<AppUser> users, List<Topic> topics)
     {
+        List<UserTopicRating> ratings = new List<UserTopicRating>();
         var fakeUserTopicRating = new Faker<UserTopicRating>("vi");
         fakeUserTopicRating.Rules((f, u) =>
         {
@@ -240,21 +241,36 @@ public class DataSeeder : IDataSeeder
         });
         fakeUserTopicRating.RuleFor(u => u.Mark, f => float.Round(f.Random.Float(1, 10), 2));
 
-        var userTopicRatings = fakeUserTopicRating.Generate(100);
 
-        _dbContext.UserTopicRatings.AddRange(userTopicRatings);
-        _dbContext.SaveChanges();
+        int i = 0;
+        do
+        {
+            if (i >= 100)
+                break;
 
-        return userTopicRatings;
+            UserTopicRating rating = fakeUserTopicRating.Generate();
+            _dbContext.UserTopicRatings.Add(rating);
+            var result = _dbContext.SaveChangesAsync().GetAwaiter().GetResult();
+
+            if (result > 0)
+            {
+                ratings.Add(rating);
+                i++;
+                continue;
+            }
+        } while (true);
+
+        return ratings;
     }
 
-    private List<Post> AddPosts(List<AppUser> users, List<Topic> topics, List<Tag> tags)
+    private List<Post> AddPosts(List<AppUser> users, List<Tag> tags)
     {
         var fakePosts = new Faker<Post>("vi");
         fakePosts.RuleFor(p => p.Title, f => f.Lorem.Sentence());
         fakePosts.RuleFor(p => p.ShortDescription, f => f.Lorem.Paragraph());
         fakePosts.RuleFor(p => p.Description, f => f.Lorem.Paragraphs(3));
         fakePosts.RuleFor(p => p.Meta, f => f.Lorem.Sentence());
+        fakePosts.RuleFor(p => p.Tags, f => f.PickRandom(tags, 3).ToList());
         fakePosts.Rules((f, u) =>
         {
             u.UrlSlug = u.Title.GenerateSlug();
@@ -263,9 +279,7 @@ public class DataSeeder : IDataSeeder
         fakePosts.RuleFor(p => p.Published, f => f.Random.Bool());
         fakePosts.RuleFor(p => p.PostedDate, f => f.Date.Past());
         fakePosts.RuleFor(p => p.ModifiedDate, f => f.Date.Recent());
-        fakePosts.RuleFor(p => p.Topic, f => f.PickRandom(topics));
         fakePosts.RuleFor(p => p.User, f => f.PickRandom(users));
-        fakePosts.RuleFor(p => p.Tags, f => f.PickRandomParam(tags));
 
         var posts = fakePosts.Generate(100);
 
@@ -277,6 +291,7 @@ public class DataSeeder : IDataSeeder
 
     private List<UserNotify> AddUserNotify(List<AppUser> users, List<Notification> notifications)
     {
+        List<UserNotify> notifies = new List<UserNotify>();
         var fakeUserNofify = new Faker<UserNotify>("vi");
         fakeUserNofify.Rules((f, u) =>
         {
@@ -298,12 +313,25 @@ public class DataSeeder : IDataSeeder
         });
         fakeUserNofify.RuleFor(u => u.Viewed, f => f.Random.Bool());
 
-        var notifying = fakeUserNofify.Generate(100);
+        int i = 0;
+        do
+        {
+            if (i >= 100)
+                break;
 
-        _dbContext.UserNotifies.AddRange(notifying);
-        _dbContext.SaveChanges();
+            UserNotify notify = fakeUserNofify.Generate();
+            _dbContext.UserNotifies.Add(notify);
+            var result = _dbContext.SaveChangesAsync().GetAwaiter().GetResult();
 
-        return notifying;
+            if (result > 0)
+            {
+                notifies.Add(notify);
+                i++;
+                continue;
+            }
+        } while (true);
+
+        return notifies;
     }
 
     private List<Notification> AddNotifications(List<NotiLevel> notiLevels)
@@ -480,9 +508,9 @@ public class DataSeeder : IDataSeeder
         fakeComments.RuleFor(u => u.Content, f => f.Lorem.Sentence(10, 5));
         fakeComments.RuleFor(u => u.Date, f => f.Date.Between(new DateTime(2021, 5, 10), new DateTime(2023, 5, 10)));
         fakeComments.RuleFor(u => u.User, f => f.PickRandom(users));
-        fakeComments.RuleFor(u => u.Topics, f => f.PickRandomParam(topics));
+        fakeComments.RuleFor(u => u.Topics, f => f.PickRandom(topics, 2).ToList());
 
-        var comments = fakeComments.Generate(300);
+        var comments = fakeComments.Generate(50);
 
         _dbContext.Comments.AddRange(comments);
         _dbContext.SaveChanges();
@@ -490,10 +518,14 @@ public class DataSeeder : IDataSeeder
         return comments;
     }
 
-    private List<Topic> AddTopics(List<TopicRank> topicRanks, List<SpecificAward> specificAwards)
+    private List<Topic> AddTopics(List<TopicRank> topicRanks, List<SpecificAward> specificAwards, List<AppUser> users)
     {
         var fakeTopics = new Faker<Topic>("vi");
         fakeTopics.RuleFor(u => u.TopicName, f => f.Commerce.ProductName());
+        fakeTopics.RuleFor(p => p.ShortDescription, f => f.Lorem.Paragraph());
+        fakeTopics.RuleFor(p => p.Description, f => f.Lorem.Paragraphs(3));
+        fakeTopics.RuleFor(p => p.Leader, f => f.PickRandom(users));
+        fakeTopics.RuleFor(p => p.Users, f => f.PickRandom(users, 3).ToList());
         fakeTopics.Rules((f, u) =>
         {
             u.UrlSlug = u.TopicName.GenerateSlug();
@@ -514,6 +546,102 @@ public class DataSeeder : IDataSeeder
     {
         var specificAwards = new List<SpecificAward>
         {
+            new()
+            {
+                BonusPrize = 2000000,
+                Year = 2021,
+                RankAward = rankAwards[0]
+            },
+            new()
+            {
+                BonusPrize = 1500000,
+                Year = 2021,
+                RankAward = rankAwards[1]
+            },
+            new()
+            {
+                BonusPrize = 1000000,
+                Year = 2021,
+                RankAward = rankAwards[2]
+            },
+            new()
+            {
+                BonusPrize = 500000,
+                Year = 2021,
+                RankAward = rankAwards[3]
+            },
+            new()
+            {
+                BonusPrize = 4000000,
+                Year = 2021,
+                RankAward = rankAwards[4]
+            },
+            new()
+            {
+                BonusPrize = 3000000,
+                Year = 2021,
+                RankAward = rankAwards[5]
+            },
+            new()
+            {
+                BonusPrize = 2000000,
+                Year = 2021,
+                RankAward = rankAwards[6]
+            },
+            new()
+            {
+                BonusPrize = 1000000,
+                Year = 2021,
+                RankAward = rankAwards[7]
+            },
+            new()
+            {
+                BonusPrize = 2000000,
+                Year = 2022,
+                RankAward = rankAwards[0]
+            },
+            new()
+            {
+                BonusPrize = 1500000,
+                Year = 2022,
+                RankAward = rankAwards[1]
+            },
+            new()
+            {
+                BonusPrize = 1000000,
+                Year = 2022,
+                RankAward = rankAwards[2]
+            },
+            new()
+            {
+                BonusPrize = 500000,
+                Year = 2022,
+                RankAward = rankAwards[3]
+            },
+            new()
+            {
+                BonusPrize = 4000000,
+                Year = 2022,
+                RankAward = rankAwards[4]
+            },
+            new()
+            {
+                BonusPrize = 3000000,
+                Year = 2022,
+                RankAward = rankAwards[5]
+            },
+            new()
+            {
+                BonusPrize = 2000000,
+                Year = 2022,
+                RankAward = rankAwards[6]
+            },
+            new()
+            {
+                BonusPrize = 1000000,
+                Year = 2022,
+                RankAward = rankAwards[7]
+            },
             new()
             {
                 BonusPrize = 2000000,
@@ -652,22 +780,23 @@ public class DataSeeder : IDataSeeder
         return _dbContext.TopicRanks.ToList();
     }
 
-    private async Task<List<AppUser>> AddUsers(List<AppUserRole> roles, List<Topic> topics)
+    private async Task<List<AppUser>> AddUsers(List<AppUserRole> roles)
     {
         var users = new List<AppUser>();
         var fakeUsers = new Faker<AppUser>("vi");
         fakeUsers.RuleFor(u => u.PhoneNumber, f => f.Phone.PhoneNumber());
         fakeUsers.RuleFor(u => u.PhoneNumberConfirmed, f => true);
         fakeUsers.RuleFor(u => u.EmailConfirmed, f => true);
+        fakeUsers.RuleFor(p => p.ImageUrl, f => f.Internet.Avatar());
         fakeUsers.Rules((f, u) =>
         {
             string fullName = f.Name.FullName();
             string email = f.Internet.Email();
-            string uniqueUserName = new Bogus.DataSets.Name().FullName();
+            string uniqueUserName = new Bogus.DataSets.Name().LastName().ToLower();
 
             while (_dbContext.Users.Any(x => x.UserName == uniqueUserName))
             {
-                uniqueUserName = new Bogus.DataSets.Name().FullName();
+                uniqueUserName = new Bogus.DataSets.Name().LastName().ToLower();
             }
 
             while (_dbContext.Users.Any(x => x.Email == email))
@@ -687,21 +816,39 @@ public class DataSeeder : IDataSeeder
             AppUser user = fakeUsers.Generate();
 
             var resultAdd = await _userManager.CreateAsync(user, "123");  // password: 123
-            var resultAddRole = await _userManager.AddToRoleAsync(user, RoleName.Examiner);
-
-            users.Add(user);
+            if (resultAdd.Succeeded)
+            {
+                var resultAddRole = await _userManager.AddToRoleAsync(user, RoleName.Examiner);
+                users.Add(user);
+            }
         }
 
-        fakeUsers.RuleFor(u => u.Topics, f => new List<Topic>() { f.PickRandom(topics), f.PickRandom(topics), f.PickRandom(topics) });
         fakeUsers.RuleFor(u => u.MSSV, f => f.Random.Int(1700000, 3000000).ToString());
+        fakeUsers.RuleFor(u => u.GradeName, f => f.PickRandom("CTK44", "CTK45", "CTK46", "CTK47"));
 
         for (int i = 0; i < 50; i++)
         {
             AppUser user = fakeUsers.Generate();
 
-            IdentityResult resultAdd = await _userManager.CreateAsync(user, "123");  // password: 123
-            var resultAddRole = await _userManager.AddToRoleAsync(user, RoleName.Examinee);
-            users.Add(user);
+            try
+            {
+                var resultAdd = await _userManager.CreateAsync(user, "123");  // password: 123
+                //await Task.Delay(500);
+                if (resultAdd.Succeeded)
+                {
+                    var resultAddRole = await _userManager.AddToRoleAsync(user, RoleName.Examinee);
+                    users.Add(user);
+                }
+            }
+            catch (Exception ex)
+            {
+                foreach (var item in _dbContext.ChangeTracker.Entries())
+                {
+                    Console.WriteLine(item.ToString());
+                }
+
+                await Console.Out.WriteLineAsync(ex.Message);
+            }
         }
 
         return users;
@@ -709,17 +856,17 @@ public class DataSeeder : IDataSeeder
 
     private async Task AddDefaultUsers()
     {
-        var userAdmin = await _userManager.FindByEmailAsync("admin");
+        var userAdmin = await _userManager.FindByEmailAsync("admin@example.com");
         if (userAdmin == null)
         {
             userAdmin = new AppUser
             {
-                UserName = "Phan Thi Thanh Nga",
+                UserName = "ngaptt",
                 Email = "admin@example.com",
                 EmailConfirmed = true,
                 FullName = "Phan Thị Thanh Nga",
-                UrlSlug = "admin",
-                JoinedDate = DateTime.Now
+                UrlSlug = "ngaptt",
+                JoinedDate = DateTime.Now,
             };
 
             await _userManager.CreateAsync(userAdmin, "123");  // password: 123
@@ -783,7 +930,7 @@ public static class StringExtensions
         if (string.IsNullOrWhiteSpace(text))
             return text;
 
-        text = text.Replace("Đ", "D").Replace("đ", "d");
+        text = text.Replace("Đ", "D").Replace("Ð", "D").Replace("đ", "d").Replace("đ", "d");
         text = text.Normalize(NormalizationForm.FormD);
         char[] chars = text
             .Where(c => CharUnicodeInfo.GetUnicodeCategory(c)

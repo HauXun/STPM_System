@@ -6,9 +6,9 @@ public class PostPhotoDto
 {
     public int Id { get; set; }
 
-    public string ImageUrl { get; set; } = null!;
+    public string ImageUrl { get; set; }
 
     public int PostId { get; set; }
 
-    public virtual PostDto Post { get; set; } = null!;
+    //public virtual PostDto Post { get; set; }
 }

@@ -28,8 +28,11 @@ public class AppUserFilterModel : PagingModel
     public string UserSlug { get; set; }
     [DisplayName("Đề tài")]
     public int? TopicId { get; set; }
+    [DisplayName("Bài viết")]
+    public int? PostId { get; set; }
 
     public IEnumerable<SelectListItem> TopicList { get; set; }
+    public IEnumerable<SelectListItem> PostList { get; set; }
     public IEnumerable<SelectListItem> MonthList { get; set; }
 
     public AppUserFilterModel()

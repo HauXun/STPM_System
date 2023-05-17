@@ -6,9 +6,9 @@ public class NotifyAttachmentDto
 {
     public int Id { get; set; }
 
-    public string AttachmentUrl { get; set; } = null!;
+    public string AttachmentUrl { get; set; }
 
     public int NotifyId { get; set; }
 
-    public virtual NotificationDto Notify { get; set; } = null!;
+    //public virtual NotificationDto Notify { get; set; } = null!;
 }

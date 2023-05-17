@@ -4,7 +4,7 @@ using System.Globalization;
 
 namespace Stpm.WebApi.Models.Topic;
 
-public class TopicFilterModel
+public class TopicFilterModel : PagingModel
 {
     [DisplayName("Từ khoá")]
     public string Keyword { get; set; }
@@ -12,6 +12,8 @@ public class TopicFilterModel
     public string TopicName { get; set; }
     [DisplayName("Slug")]
     public string UrlSlug { get; set; }
+    [DisplayName("Đã đăng ký")]
+    public bool? Registered { get; set; }
     [DisplayName("Đã huỷ")]
     public bool? Cancel { get; set; }
     [DisplayName("Đã khoá")]
@@ -20,14 +22,18 @@ public class TopicFilterModel
     public int? Year { get; set; }
     [DisplayName("Tháng")]
     public int? Month { get; set; }
+    [DisplayName("Năm Huỷ")]
+    public int? CancelYear { get; set; }
+    [DisplayName("Tháng Huỷ")]
+    public int? CancelMonth { get; set; }
     [DisplayName("RankAward-Slug")]
     public string RankAwardSlug { get; set; }
-    [DisplayName("Topic-Slug")]
-    public string TopicSlug { get; set; }
     [DisplayName("User-Slug")]
     public string UserSlug { get; set; }
     [DisplayName("Thí sinh")]
-    public string UserId { get; set; }
+    public int? UserId { get; set; }
+    [DisplayName("Trưởng nhóm")]
+    public int? LeaderId { get; set; }
     [DisplayName("Giải thưởng")]
     public int? RankAwardId { get; set; }
     [DisplayName("Hạng mục")]

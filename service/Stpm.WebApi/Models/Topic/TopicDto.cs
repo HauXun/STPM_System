@@ -1,6 +1,5 @@
 ﻿using Stpm.WebApi.Models.AppUser;
 using Stpm.WebApi.Models.Comment;
-using Stpm.WebApi.Models.Post;
 using Stpm.WebApi.Models.SpecificAward;
 using Stpm.WebApi.Models.TopicPhoto;
 using Stpm.WebApi.Models.TopicRank;
@@ -13,13 +12,21 @@ public partial class TopicDto
 {
     public int Id { get; set; }
 
-    public string TopicName { get; set; } = null!;
+    public string TopicName { get; set; }
 
-    public string UrlSlug { get; set; } = null!;
+    public string ShortDescription { get; set; }
+
+    public string Description { get; set; }
+
+    public string UrlSlug { get; set; }
 
     public string OutlineUrl { get; set; }
 
     public DateTime RegisDate { get; set; }
+
+    public bool Registered { get; set; }
+
+    public DateTime? CancelDate { get; set; }
 
     public bool Cancel { get; set; }
 
@@ -31,13 +38,15 @@ public partial class TopicDto
 
     public int? SpecificAwardId { get; set; }
 
-    public virtual SpecificAwardDto SpecificAward { get; set; }
+    public int LeaderId { get; set; }
 
-    public virtual TopicRankDto TopicRank { get; set; } = null!;
+    public virtual SpecificAwardDto? SpecificAward { get; set; }
+
+    public virtual TopicRankDto TopicRank { get; set; }
+
+    public virtual AppUserDto Leader { get; set; }
 
     public virtual ICollection<UserTopicRatingDto> UserTopicRatings { get; set; } = new List<UserTopicRatingDto>();
-
-    public virtual ICollection<PostDto> Posts { get; set; } = new List<PostDto>();
 
     public virtual ICollection<CommentDto> Comments { get; set; } = new List<CommentDto>();
 

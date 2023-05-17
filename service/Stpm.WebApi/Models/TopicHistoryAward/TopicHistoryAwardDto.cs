@@ -1,16 +1,16 @@
 ﻿namespace Stpm.WebApi.Models.TopicHistoryAward;
 
-public partial class TopicHistoryAwardDto
+public partial class TopicHistoryAwardDto : PagingModel
 {
     public int Id { get; set; }
 
-    public string TopicName { get; set; } = null!;
+    public string TopicName { get; set; }
 
-    public string UrlSlug { get; set; } = null!;
+    public string UrlSlug { get; set; }
 
-    public string TopicAward { get; set; } = null!;
+    public string TopicAward { get; set; }
 
-    public string TopicRank { get; set; } = null!;
+    public string TopicRank { get; set; }
 
     public short Year { get; set; }
 
