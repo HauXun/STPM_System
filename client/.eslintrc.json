@@ -1,5 +1,5 @@
 {
-  "extends": ["plugin:@nx/react"],
+"extends": ["plugin:@nx/react"],
   "root": true,
   "ignorePatterns": ["!**/*"],
   "plugins": ["@nx"],
