@@ -17,7 +17,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": "",
     "paths": {
-      "@/*": ["./src/*"]
+      "~/*": ["./src/*"]
     },
     "jsx": "react-jsx",
     "allowJs": false,
