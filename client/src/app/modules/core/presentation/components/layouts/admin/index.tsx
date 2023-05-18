@@ -1,11 +1,9 @@
-import { Box, Grid, Paper, Typography } from '@mui/material';
+import { Box } from '@mui/material';
+import { APPBAR_HEIGHT_SIZE, DRAWER_WIDTH } from '~/app/modules/shared/constans';
 import { CustomScrollbar } from '../../CustomScrollbar';
-import { APPBAR_SIZE, DRAWER_WIDTH } from '~/app/modules/shared/constans';
 import Header from './Header';
 import Sidebar from './Sidebar';
-import { styled } from '@mui/material/styles';
-import Notification from '../../Notification';
-import TopicList from '../../TopicList';
+import TopicRegisterList from '../../TopicRegisterList';
 
 type Props = {};
 
@@ -19,7 +17,7 @@ export default function AdminLayout({}: Props) {
         sx={{
           flexGrow: 1,
           width: { sm: `calc(100% - ${DRAWER_WIDTH}px)` },
-          mt: `${APPBAR_SIZE}px`,
+          mt: `${APPBAR_HEIGHT_SIZE}px`,
         }}
       >
         <CustomScrollbar
@@ -44,7 +42,7 @@ export default function AdminLayout({}: Props) {
                 </Paper>
               </Grid>
             </Grid> */}
-            <TopicList />
+            <TopicRegisterList />
           </Box>
         </CustomScrollbar>
       </Box>

@@ -4,8 +4,6 @@ import styles from './app.module.scss';
 
 import NxWelcome from './nx-welcome';
 import { Box, createTheme, ThemeProvider } from '@mui/material';
-import Sidebar from '~/app/modules/core/presentation/components/layouts/admin/Sidebar';
-import Header from '~/app/modules/core/presentation/components/layouts/admin/Header';
 
 const theme = createTheme({
   palette: {
@@ -15,7 +13,7 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: 'Raleway, Arial, sans-serif',
+    fontFamily: 'Raleway, Nunito, Arial, sans-serif',
     fontSize: 16,
     fontWeightLight: 300,
     fontWeightRegular: 400,
