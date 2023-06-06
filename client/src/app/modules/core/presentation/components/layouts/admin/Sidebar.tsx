@@ -18,7 +18,9 @@ import {
 } from 'ionicons/icons';
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { DRAWER_WIDTH } from '~/app/modules/shared/constans';
+import { DRAWER_WIDTH } from '~/app/modules/shared/constants';
+import { TopicRoutes } from '~/app/modules/topic/presentation/routes';
+import { UserRoutes } from '~/app/modules/user/presentation/routes';
 import logo from '~/main/assets/logo_app.png';
 import { CustomScrollbar } from '../../CustomScrollbar';
 
@@ -32,13 +34,6 @@ const CustomDrawer = styled(Drawer)(({ theme }) => ({
   },
 }));
 
-declare module 'react' {
-  interface CSSProperties {
-    '--tree-view-color'?: string;
-    '--tree-view-bg-color'?: string;
-  }
-}
-
 type StyledTreeItemProps = TreeItemProps & {
   bgColor?: string;
   color?: string;
@@ -46,7 +41,6 @@ type StyledTreeItemProps = TreeItemProps & {
   iconSize?: string;
   labelText: string;
   textSize?: string;
-  href?: string;
 };
 
 const StyledTreeItemRoot = styled(TreeItem)(({ theme }) => ({
@@ -61,14 +55,18 @@ const StyledTreeItemRoot = styled(TreeItem)(({ theme }) => ({
     fontWeight: theme.typography.fontWeightMedium,
     '&.Mui-expanded': {
       fontWeight: theme.typography.fontWeightRegular,
+      [`& .${treeItemClasses.iconContainer}, & .${treeItemClasses.label}`]:{
+        color: 'var(--tree-view-color)',
+        fontWeight: theme.typography.fontWeightBold,
+      }
     },
     '&:hover': {
       backgroundColor: theme.palette.action.hover,
     },
     '&.Mui-focused, &.Mui-selected, &.Mui-selected.Mui-focused': {
-      backgroundColor: `var(--tree-view-bg-color, ${theme.palette.action.selected})`,
-      color: 'var(--tree-view-color)',
-      fontWeight: theme.typography.fontWeightBold,
+      backgroundColor: 'unset',
+      color: 'unset',
+      fontWeight: 'unset',
     },
     [`& .${treeItemClasses.label}`]: {
       fontWeight: 'inherit',
@@ -81,29 +79,36 @@ const StyledTreeItemRoot = styled(TreeItem)(({ theme }) => ({
       paddingLeft: theme.spacing(2),
     },
   },
-  [`& .${treeItemClasses.expanded}`]: {
-    color: 'var(--tree-view-color)',
-  },
 }));
 
 function StyledTreeItem(props: StyledTreeItemProps) {
-  const { bgColor, color, labelIcon: Icon, iconSize, textSize, labelText, href, ...other } = props;
+  const { bgColor, color, labelIcon: Icon, iconSize, textSize, labelText, ...other } = props;
   const setIconSize = iconSize ?? '1.25rem';
   const setTextSize = textSize ?? '1rem';
 
+  const labelContent = (
+    <Box sx={{ display: 'flex', alignItems: 'center', p: 0.5, pr: 0, fontSize: setIconSize }}>
+      <Box component={() => <Icon />} color="inherit" />
+      <Typography
+        variant="body2"
+        sx={{
+          fontWeight: 'inherit',
+          fontFamily: 'Raleway',
+          flexGrow: 1,
+          fontSize: setTextSize,
+          ml: 3,
+        }}
+      >
+        {labelText}
+      </Typography>
+    </Box>
+  );
+
+  // const wrappedLabel = href ? <NavLink end to={href}>{labelContent}</NavLink> : labelContent;
+
   return (
     <StyledTreeItemRoot
-      label={
-        <Box sx={{ display: 'flex', alignItems: 'center', p: 0.5, pr: 0, fontSize: setIconSize }}>
-          <Box component={() => <Icon />} color="inherit" />
-          <Typography
-            variant="body2"
-            sx={{ fontWeight: 'inherit', flexGrow: 1, fontSize: setTextSize, ml: 3 }}
-          >
-            {href ? <NavLink to={href}>{labelText}</NavLink> : labelText}
-          </Typography>
-        </Box>
-      }
+      label={labelContent}
       style={{
         '--tree-view-color': color,
         '--tree-view-bg-color': bgColor,
@@ -112,6 +117,36 @@ function StyledTreeItem(props: StyledTreeItemProps) {
     />
   );
 }
+
+const StyledNavLink = styled(NavLink)(({ theme }) => ({
+  '&.active': {
+    [`& .${treeItemClasses.root}`]: {
+      [`& .${treeItemClasses.content}`]: {
+        backgroundColor: `var(--tree-view-bg-color, ${theme.palette.action.selected})`,
+        color: 'var(--tree-view-color)',
+        fontWeight: theme.typography.fontWeightBold,
+        '&.Mui-focused, &.Mui-selected': {
+          backgroundColor: `var(--tree-view-bg-color, ${theme.palette.action.selected})`,
+          color: 'var(--tree-view-color)',
+          fontWeight: theme.typography.fontWeightBold,
+        },
+      },
+    },
+  },
+  '&': {
+    [`& .${treeItemClasses.root}`]: {
+      [`& .${treeItemClasses.content}`]: {
+        '&.Mui-focused, &.Mui-selected': {
+          backgroundColor: 'inherit',
+          color: 'inherit',
+        },
+        '&.Mui-selected:hover': {
+          backgroundColor: theme.palette.action.hover,
+        },
+      },
+    },
+  },
+}));
 
 type Props = {
   /**
@@ -145,75 +180,82 @@ export default function Sidebar({ window }: Props) {
         defaultExpandIcon={<ArrowRightIcon />}
         defaultEndIcon={<div style={{ width: 24 }} />}
       >
-        <StyledTreeItem
-          nodeId="1"
-          labelText="Tổng quan"
-          labelIcon={() => <IonIcon icon={cubeOutline} />}
-          color="#479C45"
-        />
+        <StyledNavLink end to={`/admin/${TopicRoutes.TOPICS}/${TopicRoutes.TOPIC}`}>
+          <StyledTreeItem
+            nodeId="1"
+            labelText="Tổng quan"
+            labelIcon={() => <IonIcon icon={cubeOutline} />}
+          />
+        </StyledNavLink>
         <StyledTreeItem
           nodeId="2"
           labelText="Quản lý"
           labelIcon={() => <IonIcon icon={funnelOutline} />}
-          color="#479C45"
         >
           <Divider />
-          <StyledTreeItem
-            nodeId="3"
-            labelText="Đề tài"
-            labelIcon={() => <IonIcon icon={copyOutline} />}
-            color="#479C45"
-            //href="https://google.com/"
-          />
+          <StyledNavLink end to={`/admin/${TopicRoutes.TOPICS}`}>
+            <StyledTreeItem
+              nodeId="3"
+              labelText="Đề tài"
+              labelIcon={() => <IonIcon icon={copyOutline} />}
+            />
+          </StyledNavLink>
           <Divider />
-          <StyledTreeItem
-            nodeId="4"
-            labelText="Đăng ký"
-            labelIcon={() => <IonIcon icon={brushOutline} />}
-            color="#479C45  "
-          />
+          <StyledNavLink end to={`/admin/${TopicRoutes.TOPICS}/${TopicRoutes.DRAFT}`}>
+            <StyledTreeItem
+              nodeId="4"
+              labelText="Đăng ký"
+              labelIcon={() => <IonIcon icon={brushOutline} />}
+            />
+          </StyledNavLink>
           <Divider />
-          <StyledTreeItem
-            nodeId="5"
-            labelText="Tài khoản"
-            labelIcon={() => <IonIcon icon={peopleOutline} />}
-            color="#479C45  "
-          />
+          <StyledNavLink end to={`/admin/${UserRoutes.USERS}`}>
+            <StyledTreeItem
+              nodeId="5"
+              labelText="Tài khoản"
+              labelIcon={() => <IonIcon icon={peopleOutline} />}
+            />
+          </StyledNavLink>
           <Divider />
-          <StyledTreeItem
-            nodeId="6"
-            labelText="Bài viết"
-            labelIcon={() => <IonIcon icon={documentTextOutline} />}
-            color="#479C45  "
-          />
+          <StyledNavLink end to={`/`}>
+            <StyledTreeItem
+              nodeId="6"
+              labelText="Bài viết"
+              labelIcon={() => <IonIcon icon={documentTextOutline} />}
+            />
+          </StyledNavLink>
           <Divider />
-          <StyledTreeItem
-            nodeId="7"
-            labelText="Hạng mục"
-            labelIcon={() => <IonIcon icon={bookmarksOutline} />}
-            color="#479C45  "
-          />
+          <StyledNavLink end to={`/`}>
+            <StyledTreeItem
+              nodeId="7"
+              labelText="Hạng mục"
+              labelIcon={() => <IonIcon icon={bookmarksOutline} />}
+            />
+          </StyledNavLink>
           <Divider />
-          <StyledTreeItem
-            nodeId="8"
-            labelText="Thông báo"
-            labelIcon={() => <IonIcon icon={notificationsOutline} />}
-            color="#479C45  "
-          />
+          <StyledNavLink end to={`/`}>
+            <StyledTreeItem
+              nodeId="8"
+              labelText="Thông báo"
+              labelIcon={() => <IonIcon icon={notificationsOutline} />}
+            />
+          </StyledNavLink>
           <Divider />
         </StyledTreeItem>
-        <StyledTreeItem
-          nodeId="9"
-          labelText="Cài đặt"
-          labelIcon={() => <IonIcon icon={settingsOutline} />}
-          color="#479C45"
-        />
-        <StyledTreeItem
-          nodeId="10"
-          labelText="Đăng xuất"
-          labelIcon={() => <IonIcon icon={keyOutline} />}
-          color="#479C45"
-        />
+        <StyledNavLink end to={`/`}>
+          <StyledTreeItem
+            nodeId="9"
+            labelText="Cài đặt"
+            labelIcon={() => <IonIcon icon={settingsOutline} />}
+          />
+        </StyledNavLink>
+        <StyledNavLink end to={`/`}>
+          <StyledTreeItem
+            nodeId="10"
+            labelText="Đăng xuất"
+            labelIcon={() => <IonIcon icon={keyOutline} />}
+          />
+        </StyledNavLink>
       </TreeView>
     </div>
   );
@@ -247,6 +289,7 @@ export default function Sidebar({ window }: Props) {
       </CustomDrawer>
       <CustomDrawer variant="permanent" open sx={{ display: 'block' }}>
         <CustomScrollbar
+          // eslint-disable-next-line tailwindcss/no-custom-classname
           className="custom-scrollbar"
           autoHide
           autoHideTimeout={1000}
