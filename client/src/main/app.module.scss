@@ -1,4 +1,28 @@
 /* Your styles goes here. */
+button {
+  border: 0;
+}
+
+a {
+  text-decoration: none;
+  color: unset;
+}
+
+// a[aria-current="page"] {
+//   li {
+//     background-color: red;
+//     color: green !important;
+//     font-weight: 700 !important;
+//   }
+
+//   // .Mui-focused,
+//   // .Mui-selected,
+//   // .Mui-selected.Mui-focused {
+//   //   background-color: var(--tree-view-bg-color, rgba(0, 0, 0, 0.08));
+//   //   color: var(--tree-view-color, #000);
+//   //   font-weight: 700;
+//   // }
+// }
 
 .custom-scrollbar {
   // &::-webkit-scrollbar {
