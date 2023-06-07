@@ -1,6 +1,7 @@
 import { IonIcon } from '@ionic/react';
 import { IconButton, InputBase, Paper } from '@mui/material';
 import { searchOutline } from 'ionicons/icons';
+import { COMPONENT_SHADOW } from '~/app/modules/shared/constants';
 
 type Props = {
   /**
@@ -8,9 +9,10 @@ type Props = {
    * You won't need it on your project.
    */
   placeholder?: string;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-export default function SearchInput({ placeholder }: Props) {
+export default function SearchInput({ placeholder, onChange }: Props) {
   return (
     <Paper
       component="form"
@@ -19,7 +21,7 @@ export default function SearchInput({ placeholder }: Props) {
         alignItems: 'center',
         width: 560,
         borderRadius: 50,
-        boxShadow: '0px 4px 4px 0px rgba(86,157,170,0.2)',
+        boxShadow: COMPONENT_SHADOW,
       }}
     >
       <IconButton className='text-2xl' sx={{ p: '10px' }} aria-label="menu">
@@ -30,6 +32,7 @@ export default function SearchInput({ placeholder }: Props) {
         sx={{ ml: 1, flex: 1 }}
         placeholder={placeholder ?? 'Tìm kiếm'}
         inputProps={{ 'aria-label': 'tìm kiếm' }}
+        onChange={onChange}
       />
     </Paper>
   );

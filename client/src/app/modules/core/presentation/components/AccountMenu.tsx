@@ -1,17 +1,18 @@
-import Logout from '@mui/icons-material/Logout';
-import PersonAdd from '@mui/icons-material/PersonAdd';
-import Settings from '@mui/icons-material/Settings';
-import Avatar from '@mui/material/Avatar';
-import Box from '@mui/material/Box';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import Tooltip from '@mui/material/Tooltip';
+import { Logout, PersonAdd, Settings } from '@mui/icons-material';
+import {
+  Avatar,
+  Box,
+  Divider,
+  IconButton,
+  ListItemIcon,
+  Menu,
+  MenuItem,
+  Tooltip,
+  styled,
+} from '@mui/material';
 import { Fragment, useState } from 'react';
+import { ACCOUNT_MENU_SIZE } from '~/app/modules/shared/constants';
 import logo from '~/main/assets/logo_app.png';
-import { styled } from '@mui/material';
 
 const StyledMenu = styled(Menu)(({ theme }) => ({
   '& .MuiMenuItem-root': {
@@ -38,8 +39,17 @@ export default function AccountMenu() {
             aria-controls={open ? 'account-menu' : undefined}
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
+            sx={{
+              p: 0,
+            }}
           >
-            <Avatar src={logo} sx={{ width: 40, height: 40 }}></Avatar>
+            <Avatar
+              src={logo}
+              sx={{
+                width: ACCOUNT_MENU_SIZE,
+                height: ACCOUNT_MENU_SIZE,
+              }}
+            />
           </IconButton>
         </Tooltip>
       </Box>

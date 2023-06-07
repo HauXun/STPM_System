@@ -13,6 +13,12 @@ export const formatTopicStatus = ({
 
   if (registered)
     return { name: 'Đã đăng ký', color: 'bg-green-100 hover:bg-green-200 text-green-600' };
-    
+
   return { name: 'Chờ duyệt', color: 'bg-yellow-100 hover:bg-amber-100 text-amber-500' };
+};
+
+export const formatStatus = (status: boolean): { name: string; color: string } => {
+  if (status) return { name: 'Hoạt động', color: 'bg-green-100 hover:bg-green-200 text-green-600' };
+
+  return { name: 'Đã khoá', color: 'bg-red-100 hover:bg-red-200 text-red-600' };
 };

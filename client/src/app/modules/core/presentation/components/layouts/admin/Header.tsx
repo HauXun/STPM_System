@@ -1,38 +1,30 @@
 import { AppBar, Toolbar, Typography } from '@mui/material';
-import AccountMenu from '../../AccountMenu';
 import { makeStyles } from '@mui/styles';
-import { APPBAR_HEIGHT_SIZE, APPBAR_PADDING_SIZE, DRAWER_WIDTH } from '~/app/modules/shared/constans';
+import { APPBAR_PADDING_SIZE, DRAWER_WIDTH, NAVBAR_PADDING_SIZE } from '~/app/modules/shared/constants';
+import AccountMenu from '../../AccountMenu';
+import { useGlobalContext } from '~/main/app';
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
-    '& .MuiToolbar-root': {
-      paddingLeft: 0,
-      minHeight: APPBAR_HEIGHT_SIZE,
-      // '& > *': {
-      //   margin: 0,
-      // },
-    },
+    color: 'black',
+    backgroundColor: 'transparent',
   },
 }));
 
-type Props = {
-  title: string;
-};
+type Props = {};
 
-export default function Header({ title }: Props) {
+export default function Header({ }: Props) {
   const classes = useStyles();
+  const { title: adminTitle } = useGlobalContext()
 
   return (
     <AppBar
       elevation={0}
       className={classes.appBar}
-      color="primary"
       position="fixed"
       sx={{
-        width: { sm: `calc(100% - ${DRAWER_WIDTH}px - ${APPBAR_PADDING_SIZE}px)` },
-        height: 50,
-        ml: { sm: `calc(${DRAWER_WIDTH}px + ${APPBAR_PADDING_SIZE})` },
-        fontFamily: 'Nunito',
+        width: { sm: `calc(100% - ${DRAWER_WIDTH}px)` },
+        py: `calc(${NAVBAR_PADDING_SIZE}px - ${APPBAR_PADDING_SIZE}px)`
       }}
     >
       <Toolbar sx={{ justifyContent: 'space-between' }}>
@@ -40,9 +32,9 @@ export default function Header({ title }: Props) {
           variant="h6"
           noWrap
           component="div"
-          sx={{ fontFamily: 'Nunito', fontWeight: 'bold' }}
+          sx={{ fontWeight: 'bold' }}
         >
-          {title}
+          {adminTitle}
         </Typography>
         <AccountMenu />
       </Toolbar>

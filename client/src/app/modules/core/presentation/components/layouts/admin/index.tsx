@@ -1,27 +1,28 @@
 import { Box } from '@mui/material';
-import { APPBAR_HEIGHT_SIZE, DRAWER_WIDTH } from '~/app/modules/shared/constans';
+import { ACCOUNT_MENU_SIZE, DRAWER_WIDTH, NAVBAR_PADDING_SIZE } from '~/app/modules/shared/constants';
 import { CustomScrollbar } from '../../CustomScrollbar';
 import Header from './Header';
 import Sidebar from './Sidebar';
-import TopicRegisterList from '../../TopicRegisterList';
+import { Outlet } from 'react-router-dom';
 
 type Props = {};
 
 export default function AdminLayout({}: Props) {
   return (
     <Box sx={{ display: 'flex' }}>
-      <Header title='Danh sách đăng ký' />
+      <Header />
       <Sidebar />
       <Box
         component="main"
         sx={{
           flexGrow: 1,
           width: { sm: `calc(100% - ${DRAWER_WIDTH}px)` },
-          mt: `${APPBAR_HEIGHT_SIZE}px`,
+          mt: `calc(${ACCOUNT_MENU_SIZE}px + ${NAVBAR_PADDING_SIZE * 2}px)`,
         }}
       >
         <CustomScrollbar
-          className="custom-scrollbar "
+          // eslint-disable-next-line tailwindcss/no-custom-classname
+          className="custom-scrollbar"
           autoHide
           autoHideTimeout={1000}
           autoHideDuration={200}
@@ -42,7 +43,10 @@ export default function AdminLayout({}: Props) {
                 </Paper>
               </Grid>
             </Grid> */}
-            <TopicRegisterList />
+            {/* <TopicRegisterList /> */}
+            {/* <TopicRegisterDraft /> */}
+            {/* <Topic /> */}
+            <Outlet />
           </Box>
         </CustomScrollbar>
       </Box>
