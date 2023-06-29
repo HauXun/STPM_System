@@ -12,7 +12,7 @@ export class TopicRepositoryImpl implements TopicRepository {
     return response.result;
   }
 
-  async getTopicsById(id: number): Promise<Topic> {
+  async getTopicsById(id: string): Promise<Topic> {
     const response = await this.dataSource.getTopicsById(id);
     return response.result;
   }

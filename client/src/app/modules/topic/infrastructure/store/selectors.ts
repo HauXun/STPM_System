@@ -17,8 +17,8 @@ export const selectTopicList = createSelector(selectTopics, selectTopicFilter, (
   });
 });
 
-export const selectTopicById = (id: number) =>
-  createSelector(selectTopics, (topics) => topics.data.find((topic) => topic.id === id));
+export const selectTopicById = (id: string) =>
+  createSelector(selectTopics, (topics) => topics.data.find((topic) => topic.id === Number(id)));
 
 export const selectTopicsByDateRange = createSelector(
   selectTopics,

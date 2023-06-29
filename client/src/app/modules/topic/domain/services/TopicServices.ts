@@ -10,7 +10,7 @@ export class TopicService {
     return await this.topicRepository.getTopics(model);
   }
 
-  async getTopicsById(id: number): Promise<Topic> {
+  async getTopicsById(id: string): Promise<Topic> {
     return this.topicRepository.getTopicsById(id);
   }
 }

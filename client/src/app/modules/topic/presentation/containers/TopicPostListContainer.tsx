@@ -1,8 +1,8 @@
 import { connect } from 'react-redux';
-import TopicList from '../components/TopicList';
+import TopicPostList from '../components/TopicPostList';
 import { AppDispatch, RootState } from '~/app/stores/store';
-import { topicActions } from '../../infrastructure/store/topicSlice';
 import { TopicFilterModel } from '../../domain/models/TopicFilterModel';
+import { topicActions } from '../../infrastructure/store/topicSlice';
 
 const mapStateToProps = (state: RootState) => {
   return {
@@ -17,4 +17,4 @@ const mapDispatchToProps = (dispatch: AppDispatch) => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(TopicList);
+export default connect(mapStateToProps, mapDispatchToProps)(TopicPostList);

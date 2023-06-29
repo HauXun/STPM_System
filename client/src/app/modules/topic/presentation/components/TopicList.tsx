@@ -6,19 +6,19 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TablePagination,
   TableRow,
   alpha,
 } from '@mui/material';
-import { Fragment, useEffect, useState } from 'react';
-import { COMPONENT_SHADOW } from '~/app/modules/shared/constants';
-import SearchFilter from '~/app/modules/shared/presentation/components/SearchFilter';
+import { ChangeEvent, useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { COMPONENT_SHADOW, CUSTOM_SCROLLBAR } from '~/app/modules/shared/constants';
+import PrimaryPagination from '~/app/modules/shared/presentation/components/Pagination';
 import { formatTopicStatus } from '~/app/modules/shared/utils';
-import { useAppDispatch, useAppSelector } from '~/app/stores/hooks';
-import { selectTopicFilter, selectTopics } from '../../infrastructure/store/selectors';
-import { topicActions } from '../../infrastructure/store/topicSlice';
 import { TopicFilterModel } from '../../domain/models/TopicFilterModel';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { TopicState } from '../../infrastructure/store/types';
+import { TopicRoutes } from '../routes';
+import Popup from '~/app/modules/shared/presentation/components/Popup';
+import TopicRegisterDraft from './TopicRegisterDraft';
 
 interface Column {
   id: 'name' | 'rank' | 'total' | 'joinDate' | 'status';
@@ -51,71 +51,52 @@ const columns: readonly Column[] = [
   },
 ];
 
-export default function TopicList() {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+type TopicListProps = {
+  topicState: TopicState;
+  fetchTopics: (model: TopicFilterModel) => void;
+  setFilter: (model: TopicFilterModel) => void;
+};
 
-  const { pathname } = useLocation();
+export default function TopicList({ topicState, fetchTopics, setFilter }: TopicListProps) {
+  // const [rowsPerPage, setRowsPerPage] = useState(10);
+  const { data: topics, filter, pagination } = topicState;
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
   const navigate = useNavigate();
 
-  const topicList = useAppSelector(selectTopics);
-  const filter = useAppSelector(selectTopicFilter);
-
-  const dispatch = useAppDispatch();
+  useEffect(() => {
+    fetchTopics(filter);
+  }, [fetchTopics, filter]);
 
   useEffect(() => {
-    dispatch(topicActions.fetchTopics(filter));
-  }, [dispatch, filter]);
+    setFilter({ pageNumber: 1, pageSize: 10 } as TopicFilterModel);
+  }, [setFilter]);
 
-  useEffect(() => {
-    dispatch(topicActions.setFilter({ pageNumber: 1, pageSize: 200 } as TopicFilterModel));
-  }, []);
-
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
+  const handlePageChange = (e: ChangeEvent<unknown>, page: number) => {
+    setFilter({ ...filter, pageNumber: page } as TopicFilterModel);
   };
 
   return (
-    <Fragment>
-      <SearchFilter
-        placeholderSearch="Tìm kiếm đề tài"
-        onChangeInput={(event) => console.log(event)}
-      />
-      <Paper
-        sx={{ width: '100%', overflow: 'hidden', mt: 4, boxShadow: COMPONENT_SHADOW }}
-        elevation={0}
-      >
+    <>
+      <Paper sx={{ width: '100%', overflow: 'hidden', boxShadow: COMPONENT_SHADOW }} elevation={0}>
         <TableContainer
           sx={{
             maxHeight: 440,
             '&::-webkit-scrollbar': {
               width: 6,
             },
-            '&::-webkit-scrollbar-track': {
-              backgroundColor: 'transparent',
-            },
-            '&::-webkit-scrollbar-thumb': {
-              backgroundColor: 'transparent',
-              borderRadius: 4,
-              transition: 'background-color 0.3s ease',
-            },
-            '&:hover::-webkit-scrollbar-track': {
-              backgroundColor: 'transparent',
-            },
-            '&:hover::-webkit-scrollbar-thumb': {
-              backgroundColor: '#00000033',
-            },
+            ...CUSTOM_SCROLLBAR,
           }}
         >
           <Table stickyHeader aria-label="sticky table">
             <TableHead>
               <TableRow
                 sx={{
+                  '& .MuiTableCell-root': {
+                    backgroundColor: 'white',
+                  },
                   '& .MuiTableCell-root:first-of-type': {
                     pl: 6,
                   },
@@ -134,89 +115,87 @@ export default function TopicList() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {topicList.data
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((topic, i) => {
-                  const { name, color } = formatTopicStatus({
-                    registered: topic.registered,
-                    cancelled: topic.cancel,
-                    forceLock: topic.forceLock,
-                  });
+              {topics.map((topic, i) => {
+                const { name, color } = formatTopicStatus({
+                  registered: topic.registered,
+                  cancelled: topic.cancel,
+                  forceLock: topic.forceLock,
+                });
 
-                  return (
-                    <TableRow
-                      hover
-                      component={Link}
-                      to={`${pathname}/${topic.id}`}
-                      role="checkbox"
-                      tabIndex={-1}
-                      key={i}
-                      sx={{
-                        cursor: 'pointer',
-                        '& .MuiTableCell-root:first-of-type': {
-                          pl: 6,
-                        },
-                        '&.MuiTableRow-hover:hover': {
-                          bgcolor: (theme) =>
-                            alpha(
-                              theme.palette.primary.main,
-                              theme.palette.action.activatedOpacity
-                            ),
-                        },
-                      }}
+                return (
+                  <TableRow
+                    hover
+                    role="checkbox"
+                    tabIndex={-1}
+                    key={i}
+                    sx={{
+                      cursor: 'pointer',
+                      '& .MuiTableCell-root:first-of-type': {
+                        pl: 6,
+                      },
+                      '&.MuiTableRow-hover:hover': {
+                        bgcolor: (theme) =>
+                          alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
+                      },
+                    }}
+                    onClick={(e) => {
+                      if (name === 'Chờ duyệt') {
+                        handleOpen();
+                      } else {
+                        navigate(`/admin/${TopicRoutes.TOPICS}/${topic.id}`);
+                      }
+                    }}
+                  >
+                    <TableCell
+                      className="text-green-600"
+                      align="left"
+                      sx={{ width: columns[0].minWidth }}
                     >
-                      <TableCell
-                        className="text-green-600"
-                        align="left"
-                        sx={{ width: columns[0].minWidth }}
+                      {topic.topicName}
+                    </TableCell>
+                    <TableCell
+                      className="text-gray-600"
+                      align="center"
+                      sx={{ width: columns[1].minWidth }}
+                    >
+                      {topic.topicRank.rankName}
+                    </TableCell>
+                    <TableCell
+                      className="text-gray-600"
+                      align="center"
+                      sx={{ width: columns[2].minWidth }}
+                    >
+                      {topic.users.length}
+                    </TableCell>
+                    <TableCell
+                      className="text-gray-600"
+                      align="center"
+                      sx={{ width: columns[3].minWidth }}
+                    >
+                      {new Date(topic.regisDate).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell align="center" sx={{ width: columns[4].minWidth }}>
+                      <Button
+                        className={`${color} w-7/12 rounded-lg px-4 py-2 text-base font-bold normal-case`}
                       >
-                        {topic.topicName}
-                      </TableCell>
-                      <TableCell
-                        className="text-gray-600"
-                        align="center"
-                        sx={{ width: columns[1].minWidth }}
-                      >
-                        {topic.topicRank.rankName}
-                      </TableCell>
-                      <TableCell
-                        className="text-gray-600"
-                        align="center"
-                        sx={{ width: columns[2].minWidth }}
-                      >
-                        {topic.users.length}
-                      </TableCell>
-                      <TableCell
-                        className="text-gray-600"
-                        align="center"
-                        sx={{ width: columns[3].minWidth }}
-                      >
-                        {new Date(topic.regisDate).toLocaleDateString()}
-                      </TableCell>
-                      <TableCell align="center" sx={{ width: columns[4].minWidth }}>
-                        <Button
-                          className={`${color} w-7/12 rounded-lg px-4 py-2 text-base font-bold normal-case`}
-                        >
-                          {name}
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+                        {name}
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </TableContainer>
-        <TablePagination
-          className="font-medium"
-          rowsPerPageOptions={[10, 25, 100]}
-          component="div"
-          count={topicList.data.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
+        <PrimaryPagination
+          count={Math.ceil((pagination?.totalItemCount ?? 0) / (pagination?.pageSize ?? 1))}
+          page={(pagination?.pageIndex ?? 0) + 1}
+          onChange={handlePageChange}
         />
       </Paper>
-    </Fragment>
+      <Popup open={open} onClose={handleClose}>
+        <TopicRegisterDraft />
+      </Popup>
+    </>
   );
 }
