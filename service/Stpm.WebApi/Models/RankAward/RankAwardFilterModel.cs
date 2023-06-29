@@ -14,4 +14,6 @@ public class RankAwardFilterModel : PagingModel
     public string TopicSlug { get; set; }
     [DisplayName("Đề tài")]
     public int? TopicId { get; set; }
+    [DisplayName("Năm")]
+    public int? Year { get; set; }
 }

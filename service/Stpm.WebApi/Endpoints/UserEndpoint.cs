@@ -14,6 +14,7 @@ using Stpm.WebApi.Extensions;
 using Stpm.WebApi.Models;
 using Stpm.WebApi.Models.AppUser;
 using Stpm.WebApi.Models.Comment;
+using Stpm.WebApi.Models.UserTopicRating;
 using System.Net;
 using System.Security.Policy;
 using System.Web;
@@ -28,6 +29,9 @@ public class UserEndpoint : ICarterModule
 
         routeGroupBuilder.MapGet("/", GetUsers)
                          .WithName("GetUsers");
+
+        routeGroupBuilder.MapGet("/{userId:int}/topicrating/{topicId:int}", GetUserTopicRating)
+                         .WithName("GetUserTopicRating");
 
         routeGroupBuilder.MapGet("/{id:int}", GetUserById)
                          .WithName("GetUserById");
@@ -83,6 +87,14 @@ public class UserEndpoint : ICarterModule
         var paginationResult = new PaginationResult<AppUserItem>(usersList);
 
         return Results.Ok(ApiResponse.Success(paginationResult));
+    }
+
+    private static async Task<IResult> GetUserTopicRating(int userId, int topicId, IUserRepository _userRepository, IMapper mapper, UserManager<AppUser> _userManager)
+    {
+        var userTopicRating = await _userRepository.GetUserTopicRatingAsync(userId, topicId);
+        var result = mapper.Map<UserTopicRatingDto>(userTopicRating);
+
+        return Results.Ok(ApiResponse.Success(result));
     }
 
     private static async Task<IResult> GetUserById(int id, IUserRepository _userRepository, IMapper mapper, UserManager<AppUser> _userManager)

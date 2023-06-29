@@ -76,6 +76,14 @@ public class UserRepository : IUserRepository
         return await userItems.ToListAsync(cancellationToken);
     }
 
+
+    public async Task<UserTopicRating> GetUserTopicRatingAsync(int userId, int topicId, CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.UserTopicRatings.AsSplitQuery()
+                                                .Where(t => t.UserId == userId && t.TopicId == topicId)
+                                                .FirstOrDefaultAsync(cancellationToken);
+    }
+
     public async Task<AppUserItem> GetUserItemByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         var x = await _userManager.Users.AsSplitQuery()

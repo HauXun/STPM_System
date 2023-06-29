@@ -306,17 +306,17 @@ public class PostRepository : IPostRepository
                                              x.Tags.Any(t => t.Name.Contains(query.Keyword)));
         }
 
-        if (query.Year > 0)
+        if (query?.Year > 0)
         {
             postsQuery = postsQuery.Where(x => x.PostedDate.Year == query.Year);
         }
 
-        if (query.Month > 0)
+        if (query?.Month > 0)
         {
             postsQuery = postsQuery.Where(x => x.PostedDate.Month == query.Month);
         }
 
-        if (query.Day > 0)
+        if (query?.Day > 0)
         {
             postsQuery = postsQuery.Where(x => x.PostedDate.Day == query.Day);
         }

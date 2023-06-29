@@ -95,7 +95,8 @@ public class CommentRepository : ICommentRepository
     private IQueryable<Comment> FilterComments(CommentQuery query)
     {
         IQueryable<Comment> commentQuery = _dbContext.Comments.AsSplitQuery()
-                                                              .AsNoTracking();
+                                                              .AsNoTracking()
+                                                              .Include(c => c.User);
 
         if (query?.UserId > 0)
         {

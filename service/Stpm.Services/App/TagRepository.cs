@@ -107,7 +107,7 @@ public class TagRepository : ITagRepository
 
     public async Task<bool> DeleteTagByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        if (id == null || _dbContext.Tags == null)
+        if (_dbContext.Tags == null)
         {
             Console.WriteLine("Không có tag nào");
             return await Task.FromResult(false);

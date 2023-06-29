@@ -7,4 +7,5 @@ public partial class RankAwardQuery
     public string UrlSlug { get; set; }
     public string TopicSlug { get; set; }
     public int? TopicId { get; set; }
+    public int? Year { get; set; }
 }

@@ -1,24 +1,16 @@
 ﻿using Carter;
 using Mapster;
 using MapsterMapper;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.IdentityModel.Tokens;
 using Stpm.Core.Collections;
-using Stpm.Core.DTO.AppUser;
-using Stpm.Core.DTO.Comment;
-using Stpm.Core.DTO.RankAward;
 using Stpm.Core.DTO.Topic;
 using Stpm.Core.Entities;
 using Stpm.Services.App;
 using Stpm.Services.Media;
 using Stpm.WebApi.Extensions;
 using Stpm.WebApi.Models;
-using Stpm.WebApi.Models.Comment;
 using Stpm.WebApi.Models.Topic;
-using System;
 using System.Net;
-using System.Security.Policy;
 using System.Web;
 
 namespace Stpm.WebApi.Endpoints;
@@ -260,7 +252,7 @@ public class TopicEndpoint : ICarterModule
     {
         return await topicRepository.RemoveSpecificTopicUserAsync(userId, topicId) ? Results.Ok(ApiResponse.Success("Topic is removed specific user", HttpStatusCode.NoContent)) : Results.Ok(ApiResponse.Fail(HttpStatusCode.NotFound, $"Could not find topic with id = {topicId} and user with id = {userId}"));
     }
-    
+
     private static async Task<IResult> UserRemoveSpecificMark(int userId, int topicId, ITopicRepository topicRepository)
     {
         return await topicRepository.UserRemoveSpecificMarkAsync(userId, topicId) ? Results.Ok(ApiResponse.Success("Topic is removed specific rating user", HttpStatusCode.NoContent)) : Results.Ok(ApiResponse.Fail(HttpStatusCode.NotFound, $"Could not find topic with id = {topicId} and user with id = {userId}"));

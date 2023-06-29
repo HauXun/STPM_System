@@ -1,8 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Stpm.Core.Contracts;
+using Stpm.Core.DTO.Post;
 using Stpm.Core.DTO.RankAward;
 using Stpm.Core.Entities;
 using Stpm.Data.Contexts;
+using Stpm.Services.Extensions;
 
 namespace Stpm.Services.App;
 
@@ -76,6 +79,30 @@ public class RankAwardRepository : IRankAwardRepository
             });
     }
 
+    public async Task<IPagedList<RankAward>> GetRankAwardByQueryAsync(RankAwardQuery query, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)
+    {
+        return await FilterRankAward(query).ToPagedListAsync(
+                                            pageNumber,
+                                            pageSize,
+                                            nameof(RankAward.Id),
+                                            "DESC",
+                                            cancellationToken);
+    }
+
+    public async Task<IPagedList<RankAward>> GetRankAwardByQueryAsync(RankAwardQuery query, IPagingParams pagingParams, CancellationToken cancellationToken = default)
+    {
+        return await FilterRankAward(query).ToPagedListAsync(
+                                            pagingParams,
+                                            cancellationToken);
+    }
+
+    public async Task<IPagedList<T>> GetRankAwardByQueryAsync<T>(RankAwardQuery query, IPagingParams pagingParams, Func<IQueryable<RankAward>, IQueryable<T>> mapper, CancellationToken cancellationToken = default)
+    {
+        IQueryable<T> result = mapper(FilterRankAward(query));
+
+        return await result.ToPagedListAsync(pagingParams, cancellationToken);
+    }
+
     public async Task<bool> AddOrUpdateSpecificAwardAsync(SpecificAward specificAward, CancellationToken cancellationToken = default)
     {
         if (specificAward.Id > 0)
@@ -119,5 +146,40 @@ public class RankAwardRepository : IRankAwardRepository
     {
         return await _dbContext.SpecificAwards.Where(x => x.Year == year)
                                               .ExecuteUpdateAsync(p => p.SetProperty(x => x.Passed, x => !x.Passed), cancellationToken) > 0;
+    }
+
+    private IQueryable<RankAward> FilterRankAward(RankAwardQuery query)
+    {
+        IQueryable<RankAward> rankAwardQuery = _dbContext.RankAwards.Include(r => r.TopicRank)
+                                                                    .Include(t => t.SpecificAwards)
+                                                                    .AsSplitQuery()
+                                                                    .AsNoTracking();
+
+        if (query?.TopicId > 0)
+        {
+            rankAwardQuery = rankAwardQuery.Where(x => x.TopicRank.Id == query.TopicId);
+        }
+
+        if (!string.IsNullOrWhiteSpace(query.TopicSlug))
+        {
+            rankAwardQuery = rankAwardQuery.Where(x => x.TopicRank.UrlSlug== query.UrlSlug);
+        }
+
+        if (!string.IsNullOrWhiteSpace(query.UrlSlug))
+        {
+            rankAwardQuery = rankAwardQuery.Where(x => x.UrlSlug == query.UrlSlug);
+        }
+
+        if (!string.IsNullOrWhiteSpace(query.Keyword))
+        {
+            rankAwardQuery = rankAwardQuery.Where(x => x.AwardName.Contains(query.Keyword));
+        }
+
+        if (query?.Year > 0)
+        {
+            rankAwardQuery = rankAwardQuery.Where(x => x.SpecificAwards.Any(s => s.Year == query.Year));
+        }
+
+        return rankAwardQuery;
     }
 }

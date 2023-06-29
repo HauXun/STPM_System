@@ -9,6 +9,8 @@ public interface IUserRepository
 {
     Task<IList<AppUserItem>> GetUsersAsync(CancellationToken cancellationToken = default);
 
+    Task<UserTopicRating> GetUserTopicRatingAsync(int userId, int topicId, CancellationToken cancellationToken = default);
+
     Task<AppUserItem> GetUserItemByIdAsync(int id, CancellationToken cancellationToken = default);
 
     Task<AppUserItem> GetCachedUserItemByIdAsync(int userId);

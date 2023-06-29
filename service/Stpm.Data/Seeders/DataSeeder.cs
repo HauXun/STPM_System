@@ -139,7 +139,7 @@ public class DataSeeder : IDataSeeder
     private List<PostVideo> AddPostVideos(List<Post> posts)
     {
         var fakePostVideos = new Faker<PostVideo>("vi");
-        fakePostVideos.RuleFor(p => p.VideoUrl, f => "https://youtu.be/mw9WcQo6aIY");
+        fakePostVideos.RuleFor(p => p.VideoUrl, f => "https://www.youtube.com/embed/mw9WcQo6aIY");
         fakePostVideos.RuleFor(p => p.Post, f => f.PickRandom(posts));
 
         var postVideos = fakePostVideos.Generate(100);
@@ -153,7 +153,7 @@ public class DataSeeder : IDataSeeder
     private List<TopicVideo> AddTopicVideos(List<Topic> topics)
     {
         var fakeTopicVideos = new Faker<TopicVideo>("vi");
-        fakeTopicVideos.RuleFor(p => p.VideoUrl, f => "https://youtu.be/mw9WcQo6aIY");
+        fakeTopicVideos.RuleFor(p => p.VideoUrl, f => "https://www.youtube.com/embed/mw9WcQo6aIY");
         fakeTopicVideos.RuleFor(p => p.Topic, f => f.PickRandom(topics));
 
         var topicVideos = fakeTopicVideos.Generate(100);

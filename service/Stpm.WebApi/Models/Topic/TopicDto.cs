@@ -40,7 +40,9 @@ public partial class TopicDto
 
     public int LeaderId { get; set; }
 
+#nullable enable
     public virtual SpecificAwardDto? SpecificAward { get; set; }
+#nullable disable
 
     public virtual TopicRankDto TopicRank { get; set; }
 

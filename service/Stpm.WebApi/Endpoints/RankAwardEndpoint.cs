@@ -1,5 +1,7 @@
 ﻿using Carter;
+using Mapster;
 using MapsterMapper;
+using Stpm.Core.Collections;
 using Stpm.Core.DTO.RankAward;
 using Stpm.Core.DTO.SpecificAward;
 using Stpm.Core.Entities;
@@ -9,6 +11,7 @@ using Stpm.WebApi.Models;
 using Stpm.WebApi.Models.RankAward;
 using Stpm.WebApi.Models.SpecificAward;
 using System.Net;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Stpm.WebApi.Endpoints;
 
@@ -43,11 +46,22 @@ public class RankAwardEndpoint : ICarterModule
                          .WithName("SwitchPassed");
     }
 
-    private static async Task<IResult> GetRankAwards(IRankAwardRepository rankAwardRepository, IMapper mapper)
+    private static async Task<IResult> GetRankAwards([AsParameters] RankAwardFilterModel model, IRankAwardRepository rankAwardRepository, IMapper mapper)
     {
-        var rankAwardsList = await rankAwardRepository.GetRankAwardsAsync();
+        var rankAwardQuery = mapper.Map<RankAwardQuery>(model);
+        var rankAwardList = await rankAwardRepository.GetRankAwardByQueryAsync(rankAwardQuery, model, topics => topics.ProjectToType<RankAwardDto>());
 
-        return Results.Ok(ApiResponse.Success(mapper.Map<List<RankAwardDto>>(rankAwardsList)));
+        if (rankAwardQuery?.Year > 0)
+        {
+            foreach (var item in rankAwardList)
+            {
+                item.SpecificAwards = item.SpecificAwards.Where(s => s.Year == rankAwardQuery?.Year).ToList();
+            }
+        }
+
+        var paginationResult = new PaginationResult<RankAwardDto>(rankAwardList);
+
+        return Results.Ok(ApiResponse.Success(paginationResult));
     }
 
     private static async Task<IResult> GetRankAwardById(int id, IRankAwardRepository rankAwardRepository, IMapper mapper)

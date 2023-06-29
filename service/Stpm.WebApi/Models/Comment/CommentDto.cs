@@ -16,7 +16,7 @@ public partial class CommentDto
 
     public int UserId { get; set; }
 
-    //public virtual AppUserDto User { get; set; } = null!;
+    public virtual AppUserDto User { get; set; } = null!;
 
     //public virtual ICollection<TopicDto> Topics { get; set; } = new List<TopicDto>();
 
