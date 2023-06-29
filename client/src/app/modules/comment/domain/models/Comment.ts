@@ -1,6 +1,9 @@
-export interface Role
-{
+import { User } from '~/app/modules/user/domain/models/User';
+export interface Comment {
   id: number;
-  name: string;
-  description: string;
+  content: string;
+  date: Date;
+  modifiedDate?: Date;
+  userId: number;
+  user: User;
 }
