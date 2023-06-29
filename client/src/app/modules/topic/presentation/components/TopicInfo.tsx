@@ -5,6 +5,7 @@ import {
   Box,
   IconButton,
   Paper,
+  Stack,
   Table,
   TableBody,
   TableCell,
@@ -14,8 +15,8 @@ import {
 } from '@mui/material';
 import { addCircleOutline, closeCircleOutline, createOutline } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { COMPONENT_SHADOW, TOPIC_CARD_HEIGHT } from '~/app/modules/shared/constants';
+import BoxFlexCenter from '~/app/modules/core/presentation/containers/BoxFlexCenter';
+import { COMPONENT_SHADOW } from '~/app/modules/shared/constants';
 import {
   CustomTableHead,
   CustomTableRow,
@@ -24,9 +25,6 @@ import CustomizedMenu from '~/app/modules/shared/presentation/components/Customi
 import DropdownInputEdit from '~/app/modules/shared/presentation/components/DropdownInputEdit';
 import LabelInputEdit from '~/app/modules/shared/presentation/components/LabelInputEdit';
 import { Topic } from '../../domain/models/Topic';
-import { defaultTopicService } from '~/app/modules/shared/common';
-import { selectTopicById } from '../../infrastructure/store/selectors';
-import { useAppSelector } from '~/app/stores/hooks';
 
 export type TopicInfoProps = {
   topic: Topic | undefined;
@@ -44,31 +42,26 @@ export default function TopicInfo({ topic }: TopicInfoProps) {
   return (
     <Paper
       sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        width: '49%',
-        height: TOPIC_CARD_HEIGHT,
-        px: 4,
-        py: 4,
+        minWidth: 700,
+        height: 'fit-content',
+        gridArea: 'h1',
+        p: 4,
         borderRadius: 2,
         boxShadow: COMPONENT_SHADOW,
       }}
+      elevation={0}
     >
-      <LabelInputEdit onChange={(e) => setTopicName(e.target.value)} value={topicName} />
-      {/* <LabelInputEdit
-        onChange={(e) => setTopicName(e.target.value)}
-        value={topicName}
-        onBlur={(e) => console.log(topicName)}
-      /> */}
-      <DropdownInputEdit
-        onChange={(e) => setTopicRank(e.target.value)}
-        value={topicRank}
-        list={[
-          { id: 1, value: 'Hạng mục 1' },
-          { id: 2, value: 'Hạng mục 2' },
-        ]}
-      />
+      <Stack spacing={3} sx={{ mb: 3 }}>
+        <LabelInputEdit onChange={(e) => setTopicName(e.target.value)} value={topicName} />
+        <DropdownInputEdit
+          // onChange={(e) => setTopicRank(e.target.value)}
+          value={topicRank}
+          list={[
+            { id: 1, value: 'Hạng mục 1' },
+            { id: 2, value: 'Hạng mục 2' },
+          ]}
+        />
+      </Stack>
       <Box>
         <Typography className="font-semibold">
           Thành viên
@@ -82,41 +75,47 @@ export default function TopicInfo({ topic }: TopicInfoProps) {
         <Table size="small" aria-label="a dense table">
           <CustomTableHead>
             <TableRow>
-              <TableCell sx={{ px: 0, width: 120 }} align="left">
-                Trưởng nhóm
-              </TableCell>
-              <TableCell sx={{ pl: 6 }} align="left">
-                Sinh viên
-              </TableCell>
+              <TableCell align="center">Trưởng nhóm</TableCell>
+              <TableCell align="left">Sinh viên</TableCell>
               <TableCell align="left"></TableCell>
             </TableRow>
           </CustomTableHead>
           <TableBody>
             {topic?.users.map((user, i) => (
               <CustomTableRow key={i}>
-                <TableCell sx={{ px: 0 }} align="center">
-                  {user.id === topic.leaderId ? (
-                    <WorkspacePremiumRounded className="text-4xl" />
-                  ) : (
-                    ''
-                  )}
+                <TableCell
+                  align="center"
+                  sx={{
+                    cursor: 'pointer',
+                    px: 0,
+                    '&:hover .MuiSvgIcon-root': {
+                      opacity: user.id === topic.leaderId ? 1 : 0.4,
+                    },
+                  }}
+                >
+                  <WorkspacePremiumRounded
+                    className="text-4xl"
+                    sx={{
+                      opacity: user.id === topic.leaderId ? 1 : 0,
+                    }}
+                  />
                 </TableCell>
-                <TableCell component="th" sx={{ width: 310, pl: 6 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <TableCell component="th">
+                  <BoxFlexCenter justifyContent="initial">
                     <Avatar
                       alt={user.fullName}
-                      src={user.imageUrl}
+                      src={user.imageUrl || 'https://picsum.photos/300/300'}
                       sx={{ width: 50, height: 50, mr: 2 }}
                     />
                     <Box>
                       <Typography className="text-gray-600">{user.fullName}</Typography>
-                      <Typography className="text-gray-500" sx={{ fontSize: '1rem' }}>
+                      <Typography className="text-base text-gray-500">
                         {user.mssv} - {user.gradeName}
                       </Typography>
                     </Box>
-                  </Box>
+                  </BoxFlexCenter>
                 </TableCell>
-                <TableCell sx={{ px: 0, width: 80 }} align="left">
+                <TableCell align="left">
                   <IconButton color="info">
                     <IonIcon icon={createOutline} />
                   </IconButton>
@@ -129,9 +128,9 @@ export default function TopicInfo({ topic }: TopicInfoProps) {
           </TableBody>
         </Table>
       </TableContainer>
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4 }}>
+      <BoxFlexCenter justifyContent='flex-end' sx={{ mt: 4 }}>
         <CustomizedMenu preText="Lưu" />
-      </Box>
+      </BoxFlexCenter>
     </Paper>
   );
 }

@@ -1,4 +1,4 @@
-import { Typography } from '@mui/material';
+import { ButtonProps, TextFieldProps, Typography } from '@mui/material';
 import { CSSProperties } from '@mui/styles';
 import { useState } from 'react';
 import CancelButton from '~/app/modules/core/presentation/components/CancelButton';
@@ -6,15 +6,15 @@ import PrimaryButton from '~/app/modules/core/presentation/components/PrimaryBut
 import PrimaryInput from '~/app/modules/core/presentation/components/PrimaryInput';
 import BoxInput from '~/app/modules/core/presentation/containers/BoxInput';
 
-type Props = {
-  sx?: CSSProperties;
-  value?: string | number;
-  onClick?: (event: React.MouseEvent<unknown>) => void;
-  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
-};
+type Props = Pick<ButtonProps, 'onClick'> &
+  Pick<TextFieldProps, 'onChange'> & {
+    sx?: CSSProperties;
+    value?: string;
+  };
 
 export default function LabelInputEdit({ sx, value, onChange, onClick }: Props) {
   const [isEdit, setIsEdit] = useState(false);
+  const [tempValue, setTempValue] = useState('');
 
   return (
     <BoxInput sx={{ ...sx }}>
@@ -25,15 +25,31 @@ export default function LabelInputEdit({ sx, value, onChange, onClick }: Props) 
       )}
       {isEdit ? (
         <>
-          <PrimaryButton sx={{ mr: 1 }} text="Lưu" onClick={onClick} />
+          <PrimaryButton
+            sx={{
+              mr: 1,
+            }}
+            text="Lưu"
+            onClick={(e) => {
+              setIsEdit(!isEdit);
+              onClick?.(e);
+            }}
+          />
           <CancelButton
             onClick={(e) => {
               setIsEdit(!isEdit);
+              onChange?.({ target: { value: tempValue } } as React.ChangeEvent<HTMLInputElement>);
             }}
           />
         </>
       ) : (
-        <PrimaryButton text="Sửa" onClick={(e) => setIsEdit(!isEdit)} />
+        <PrimaryButton
+          text="Sửa"
+          onClick={(e) => {
+            setIsEdit(!isEdit);
+            setTempValue(value ?? '');
+          }}
+        />
       )}
     </BoxInput>
   );

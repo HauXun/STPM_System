@@ -1,36 +1,60 @@
 import { IonIcon } from '@ionic/react';
-import { Avatar, Badge, Box, Chip, IconButton, Paper, Typography } from '@mui/material';
+import { Avatar, Badge, Box, Chip, IconButton, Paper, PaperProps, Typography } from '@mui/material';
 import { addCircleOutline, peopleOutline, personOutline } from 'ionicons/icons';
+import { useEffect, useState } from 'react';
+import BoxFlexCenter from '~/app/modules/core/presentation/containers/BoxFlexCenter';
+import { defaultUserService } from '~/app/modules/shared/common';
 import { COMPONENT_SHADOW } from '~/app/modules/shared/constants';
+import { User } from '~/app/modules/user/domain/models/User';
 import { Topic } from '../../domain/models/Topic';
 
-export type TopicWorkFlowProps = {
+export type TopicWorkFlowProps = PaperProps & {
   topic: Topic | undefined;
 };
 
-export default function TopicWorkFlow({ topic }: TopicWorkFlowProps) {
+export default function TopicWorkFlow({ topic, sx }: TopicWorkFlowProps) {
+  const [users, setUsers] = useState<User[]>();
+
+  useEffect(() => {
+    (async () => {
+      try {
+        if (topic && topic.userTopicRatings.length > 0) {
+          const usersData = await Promise.all(
+            topic.userTopicRatings.map((u) => defaultUserService.getUsersById(u.userId.toString()))
+          );
+          setUsers(usersData);
+        }
+      } catch (error) {
+        console.log('Failed to fetch user details', error);
+      }
+    })();
+  }, [topic]);
+  
   return (
     <Paper
       sx={{
         width: '100%',
+        gridArea: 'h3',
         px: 4,
         py: 4,
         borderRadius: 2,
         boxShadow: COMPONENT_SHADOW,
+        ...sx,
       }}
+      elevation={0}
     >
       <Typography sx={{ fontWeight: 600 }}>Tập tin liên quan</Typography>
       <Typography variant="caption">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias, dolore.
+        Một số thông tin liên quan công tác chấm thi đối với đề tài dự thi.
       </Typography>
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: '40% 1fr',
+          gridTemplateColumns: '50% 1fr',
         }}
       >
-        <Box sx={{ display: 'grid', gridTemplateColumns: '30% 1fr', p: 1, pr: 0 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: '32% 1fr', p: 1, pr: 0 }}>
+          <BoxFlexCenter justifyContent="initial">
             <IonIcon className="text-2xl" icon={personOutline} />
             <Typography
               className="text-base text-gray-600"
@@ -41,20 +65,20 @@ export default function TopicWorkFlow({ topic }: TopicWorkFlowProps) {
             >
               Trưởng nhóm
             </Typography>
-          </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', ml: 5 }}>
+          </BoxFlexCenter>
+          <BoxFlexCenter justifyContent="initial" sx={{ ml: 5 }}>
             <Avatar
               alt={topic?.leader.fullName}
-              src={topic?.leader.imageUrl}
+              src={topic?.leader.imageUrl || 'https://picsum.photos/300/300'}
               sx={{ width: 35, height: 35, mr: 2 }}
             />
             <Box>
               <Typography className="text-base text-gray-600">{topic?.leader.fullName}</Typography>
             </Box>
-          </Box>
+          </BoxFlexCenter>
         </Box>
-        <Box sx={{ display: 'grid', gridTemplateColumns: '30% 1fr', p: 1, pr: 0 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: '40% 1fr', p: 1, pr: 0 }}>
+          <BoxFlexCenter justifyContent="initial">
             <IonIcon className="text-2xl" icon={peopleOutline} />
             <Typography
               className="text-base text-gray-600"
@@ -65,25 +89,29 @@ export default function TopicWorkFlow({ topic }: TopicWorkFlowProps) {
             >
               Chỉ định chấm thi
             </Typography>
-          </Box>
-          <Box
+          </BoxFlexCenter>
+          <BoxFlexCenter
+            justifyContent="initial"
             sx={{
-              display: 'flex',
-              alignItems: 'center',
               ml: 5,
               '& .MuiAvatar-root:not(:first-of-type)': { ml: 0.2 },
             }}
           >
-            {topic?.userTopicRatings.map((user, i) => (
-              <Avatar key={i} alt={user.fullName} src={user.imageUrl} sx={{ width: 35, height: 35 }} />
+            {users && users.length > 0 && users.map((user, i) => (
+              <Avatar
+                key={i}
+                alt={user.fullName}
+                src={user.imageUrl || 'https://picsum.photos/300/300'}
+                sx={{ width: 35, height: 35 }}
+              />
             ))}
             <IconButton sx={{ ml: 1 }} color="info">
               <IonIcon icon={addCircleOutline} />
             </IconButton>
-          </Box>
+          </BoxFlexCenter>
         </Box>
-        <Box sx={{ display: 'grid', gridTemplateColumns: '30% 1fr', p: 1, pr: 0 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: '32% 1fr', p: 1, pr: 0 }}>
+          <BoxFlexCenter justifyContent="initial">
             <IonIcon className="text-2xl" icon={peopleOutline} />
             <Typography
               className="text-base text-gray-600"
@@ -94,22 +122,26 @@ export default function TopicWorkFlow({ topic }: TopicWorkFlowProps) {
             >
               Nhóm
             </Typography>
-          </Box>
-          <Box
+          </BoxFlexCenter>
+          <BoxFlexCenter
+            justifyContent="initial"
             sx={{
-              display: 'flex',
-              alignItems: 'center',
               ml: 5,
               '& .MuiAvatar-root:not(:first-of-type)': { ml: 0.2 },
             }}
           >
             {topic?.users.map((user, i) => (
-              <Avatar key={i} alt={user.fullName} src={user.imageUrl} sx={{ width: 35, height: 35 }} />
+              <Avatar
+                key={i}
+                alt={user.fullName}
+                src={user.imageUrl || 'https://picsum.photos/300/300'}
+                sx={{ width: 35, height: 35 }}
+              />
             ))}
-          </Box>
+          </BoxFlexCenter>
         </Box>
-        <Box sx={{ display: 'grid', gridTemplateColumns: '30% 1fr', p: 1, pr: 0 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: '40% 1fr', p: 1, pr: 0 }}>
+          <BoxFlexCenter justifyContent="initial">
             <IonIcon className="text-2xl" icon={personOutline} />
             <Typography
               className="text-base text-gray-600"
@@ -120,15 +152,15 @@ export default function TopicWorkFlow({ topic }: TopicWorkFlowProps) {
             >
               Tổng điểm
             </Typography>
-          </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', ml: 5 }}>
+          </BoxFlexCenter>
+          <BoxFlexCenter justifyContent="initial" sx={{ ml: 5 }}>
             <Chip
               className="bg-orange-100"
               sx={{ borderRadius: 2, '& .MuiBadge-root': { m: '10px 5px 10px 20px' } }}
               icon={<Badge color="warning" variant="dot" />}
               label="Chưa đánh giá"
             />
-          </Box>
+          </BoxFlexCenter>
         </Box>
       </Box>
     </Paper>

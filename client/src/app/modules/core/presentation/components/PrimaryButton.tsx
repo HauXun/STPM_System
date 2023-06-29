@@ -1,19 +1,16 @@
-import { Button } from '@mui/material';
-import { CSSProperties } from '@mui/styles';
+import { Button, ButtonProps } from '@mui/material';
 
-type Props = {
-  sx?: CSSProperties;
+interface Props extends ButtonProps {
   text: string;
-  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
-};
+}
 
-export default function PrimaryButton({ sx, text, onClick }: Props) {
+export default function PrimaryButton({ sx, text, className, ...props }: Props) {
   return (
     <Button
-      className="font-semibold text-white"
+      className={`font-semibold text-white ${className}`}
       sx={{ textTransform: 'none', height: '100%', borderRadius: 2, ...sx }}
       variant="contained"
-      onClick={onClick}
+      {...props}
     >
       {text}
     </Button>

@@ -4,5 +4,5 @@ import { TopicFilterModel } from "../models/TopicFilterModel";
 
 export interface TopicRepository {
   getTopics(model: TopicFilterModel): Promise<PaginationResponse<Topic[]>>;
-  getTopicsById(id: number): Promise<Topic>;
+  getTopicsById(id: string): Promise<Topic>;
 }

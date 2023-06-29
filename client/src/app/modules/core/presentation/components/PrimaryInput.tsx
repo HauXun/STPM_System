@@ -1,11 +1,13 @@
-import { InputBase } from '@mui/material'
-import { CSSProperties } from '@mui/styles';
+import { InputBase, InputBaseProps } from "@mui/material";
 
-type Props = {
-  sx?: CSSProperties;
-  value?: string | number;
-  onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
-  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+export default function PrimaryInput({ sx, className, ...props}: InputBaseProps) {
+  return (
+    <InputBase
+      className={`bg-white text-base font-semibold ${className}`}
+      sx={{ flex: 1, mr: 2, border: '1px solid #ccc', borderRadius: '6px', px: 2, height: '100%', ...sx }}
+      {...props}
+    />
+  );
 }
 
 export default function PrimaryInput({ sx, value, onClick, onChange }: Props) {

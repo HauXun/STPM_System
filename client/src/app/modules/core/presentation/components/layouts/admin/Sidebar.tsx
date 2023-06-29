@@ -1,6 +1,5 @@
 import { IonIcon } from '@ionic/react';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+import { KeyboardArrowDownRounded, KeyboardArrowRightRounded } from '@mui/icons-material/';
 import { TreeItem, TreeItemProps, TreeView, treeItemClasses } from '@mui/lab';
 import { Box, CardMedia, Divider, Drawer, IconProps, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -15,6 +14,8 @@ import {
   notificationsOutline,
   peopleOutline,
   settingsOutline,
+  documentsOutline,
+  albumsOutline
 } from 'ionicons/icons';
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
@@ -23,6 +24,7 @@ import { TopicRoutes } from '~/app/modules/topic/presentation/routes';
 import { UserRoutes } from '~/app/modules/user/presentation/routes';
 import logo from '~/main/assets/logo_app.png';
 import { CustomScrollbar } from '../../CustomScrollbar';
+import BoxFlexCenter from '~/app/modules/core/presentation/containers/BoxFlexCenter';
 
 const CustomDrawer = styled(Drawer)(({ theme }) => ({
   '& .MuiDrawer-paper': {
@@ -32,6 +34,12 @@ const CustomDrawer = styled(Drawer)(({ theme }) => ({
     backgroundColor: theme.palette.background.default,
     overflowY: 'hidden',
   },
+}));
+
+const CustomDivider = styled(Divider)(({ theme }) => ({
+  width: DRAWER_WIDTH - 50,
+  margin: 'auto',
+  transform: 'translateY(-5px)',
 }));
 
 type StyledTreeItemProps = TreeItemProps & {
@@ -55,10 +63,10 @@ const StyledTreeItemRoot = styled(TreeItem)(({ theme }) => ({
     fontWeight: theme.typography.fontWeightMedium,
     '&.Mui-expanded': {
       fontWeight: theme.typography.fontWeightRegular,
-      [`& .${treeItemClasses.iconContainer}, & .${treeItemClasses.label}`]:{
+      [`& .${treeItemClasses.iconContainer}, & .${treeItemClasses.label}`]: {
         color: 'var(--tree-view-color)',
         fontWeight: theme.typography.fontWeightBold,
-      }
+      },
     },
     '&:hover': {
       backgroundColor: theme.palette.action.hover,
@@ -87,7 +95,7 @@ function StyledTreeItem(props: StyledTreeItemProps) {
   const setTextSize = textSize ?? '1rem';
 
   const labelContent = (
-    <Box sx={{ display: 'flex', alignItems: 'center', p: 0.5, pr: 0, fontSize: setIconSize }}>
+    <BoxFlexCenter sx={{ p: 0.5, pr: 0, fontSize: setIconSize }}>
       <Box component={() => <Icon />} color="inherit" />
       <Typography
         variant="body2"
@@ -101,7 +109,7 @@ function StyledTreeItem(props: StyledTreeItemProps) {
       >
         {labelText}
       </Typography>
-    </Box>
+    </BoxFlexCenter>
   );
 
   // const wrappedLabel = href ? <NavLink end to={href}>{labelContent}</NavLink> : labelContent;
@@ -117,6 +125,36 @@ function StyledTreeItem(props: StyledTreeItemProps) {
     />
   );
 }
+
+const StyledNavLink = styled(NavLink)(({ theme }) => ({
+  '&.active': {
+    [`& .${treeItemClasses.root}`]: {
+      [`& .${treeItemClasses.content}`]: {
+        backgroundColor: `var(--tree-view-bg-color, ${theme.palette.action.selected})`,
+        color: 'var(--tree-view-color)',
+        fontWeight: theme.typography.fontWeightBold,
+        '&.Mui-focused, &.Mui-selected': {
+          backgroundColor: `var(--tree-view-bg-color, ${theme.palette.action.selected})`,
+          color: 'var(--tree-view-color)',
+          fontWeight: theme.typography.fontWeightBold,
+        },
+      },
+    },
+  },
+  '&': {
+    [`& .${treeItemClasses.root}`]: {
+      [`& .${treeItemClasses.content}`]: {
+        '&.Mui-focused, &.Mui-selected': {
+          backgroundColor: 'inherit',
+          color: 'inherit',
+        },
+        '&.Mui-selected:hover': {
+          backgroundColor: theme.palette.action.hover,
+        },
+      },
+    },
+  },
+}));
 
 const StyledNavLink = styled(NavLink)(({ theme }) => ({
   '&.active': {
@@ -166,7 +204,7 @@ export default function Sidebar({ window }: Props) {
   const container = window !== undefined ? () => window().document.body : undefined;
 
   const drawer = (
-    <div>
+    <Box>
       <CardMedia
         style={{ padding: '3rem', width: '12rem', margin: 'auto' }}
         component="img"
@@ -176,11 +214,11 @@ export default function Sidebar({ window }: Props) {
       <TreeView
         aria-label="admin"
         defaultExpanded={['2']}
-        defaultCollapseIcon={<ArrowDropDownIcon />}
-        defaultExpandIcon={<ArrowRightIcon />}
+        defaultCollapseIcon={<KeyboardArrowDownRounded />}
+        defaultExpandIcon={<KeyboardArrowRightRounded />}
         defaultEndIcon={<div style={{ width: 24 }} />}
       >
-        <StyledNavLink end to={`/admin/${TopicRoutes.TOPICS}/${TopicRoutes.TOPIC}`}>
+        <StyledNavLink end to={`/`}>
           <StyledTreeItem
             nodeId="1"
             labelText="Tổng quan"
@@ -192,72 +230,86 @@ export default function Sidebar({ window }: Props) {
           labelText="Quản lý"
           labelIcon={() => <IonIcon icon={funnelOutline} />}
         >
-          <Divider />
-          <StyledNavLink end to={`/admin/${TopicRoutes.TOPICS}`}>
-            <StyledTreeItem
-              nodeId="3"
-              labelText="Đề tài"
-              labelIcon={() => <IonIcon icon={copyOutline} />}
-            />
-          </StyledNavLink>
-          <Divider />
+          <CustomDivider />
+          <StyledTreeItem
+            nodeId="3"
+            labelText="Đề tài"
+            labelIcon={() => <IonIcon icon={copyOutline} />}
+          >
+            <StyledNavLink end to={`/admin/${TopicRoutes.TOPICS}/${TopicRoutes.REGISTRATION}`}>
+              <StyledTreeItem
+                nodeId="4"
+                labelText="Danh sách đăng ký"
+                labelIcon={() => <IonIcon icon={documentsOutline} />}
+              />
+            </StyledNavLink>
+            <CustomDivider />
+            <StyledNavLink end to={`/admin/${TopicRoutes.TOPICS}`}>
+              <StyledTreeItem
+                nodeId="5"
+                labelText="Danh sách đề tài"
+                labelIcon={() => <IonIcon icon={albumsOutline} />}
+              />
+            </StyledNavLink>
+          </StyledTreeItem>
+          <CustomDivider />
           <StyledNavLink end to={`/admin/${TopicRoutes.TOPICS}/${TopicRoutes.DRAFT}`}>
             <StyledTreeItem
-              nodeId="4"
+              nodeId="6"
               labelText="Đăng ký"
               labelIcon={() => <IonIcon icon={brushOutline} />}
             />
           </StyledNavLink>
-          <Divider />
+          <CustomDivider />
           <StyledNavLink end to={`/admin/${UserRoutes.USERS}`}>
             <StyledTreeItem
-              nodeId="5"
+              nodeId="7"
               labelText="Tài khoản"
               labelIcon={() => <IonIcon icon={peopleOutline} />}
             />
           </StyledNavLink>
-          <Divider />
+          <CustomDivider />
           <StyledNavLink end to={`/`}>
             <StyledTreeItem
-              nodeId="6"
+              nodeId="8"
               labelText="Bài viết"
               labelIcon={() => <IonIcon icon={documentTextOutline} />}
             />
           </StyledNavLink>
-          <Divider />
-          <StyledNavLink end to={`/`}>
+          <CustomDivider />
+          <StyledNavLink end to={`/admin/${TopicRoutes.TOPICS}/${TopicRoutes.RANKS}/${new Date().getFullYear()}`}>
             <StyledTreeItem
-              nodeId="7"
+              nodeId="9"
               labelText="Hạng mục"
               labelIcon={() => <IonIcon icon={bookmarksOutline} />}
             />
           </StyledNavLink>
-          <Divider />
+          <CustomDivider />
           <StyledNavLink end to={`/`}>
             <StyledTreeItem
-              nodeId="8"
+              nodeId="10"
               labelText="Thông báo"
               labelIcon={() => <IonIcon icon={notificationsOutline} />}
             />
           </StyledNavLink>
-          <Divider />
+          <CustomDivider />
         </StyledTreeItem>
         <StyledNavLink end to={`/`}>
           <StyledTreeItem
-            nodeId="9"
+            nodeId="11"
             labelText="Cài đặt"
             labelIcon={() => <IonIcon icon={settingsOutline} />}
           />
         </StyledNavLink>
         <StyledNavLink end to={`/`}>
           <StyledTreeItem
-            nodeId="10"
+            nodeId="12"
             labelText="Đăng xuất"
             labelIcon={() => <IonIcon icon={keyOutline} />}
           />
         </StyledNavLink>
       </TreeView>
-    </div>
+    </Box>
   );
 
   return (

@@ -1,5 +1,5 @@
 import { Paper, Typography } from '@mui/material';
-import { COMPONENT_SHADOW, TOPIC_CARD_HEIGHT } from '~/app/modules/shared/constants';
+import { COMPONENT_SHADOW } from '~/app/modules/shared/constants';
 import { Topic } from '../../domain/models/Topic';
 
 export type TopicAttachmentInfoProps = {
@@ -11,17 +11,16 @@ export default function TopicAttachmentInfo({ topic }: TopicAttachmentInfoProps)
     <Paper
       sx={{
         display: 'flex',
+        justifyContent: 'flex-start',
         flexDirection: 'column',
-        justifyContent: 'space-between',
-        width: '49%',
-        height: TOPIC_CARD_HEIGHT,
-        px: 4,
-        py: 4,
+        gridArea: 'h2',
+        p: 4,
         borderRadius: 2,
         boxShadow: COMPONENT_SHADOW,
       }}
+      elevation={0}
     >
-      <Typography sx={{ fontWeight: 600 }}>Tập tin liên quan</Typography>
+      <Typography className="font-semibold">Tập tin liên quan</Typography>
       <Paper
         elevation={0}
         sx={{
@@ -34,7 +33,7 @@ export default function TopicAttachmentInfo({ topic }: TopicAttachmentInfoProps)
           height: '100%',
         }}
       >
-        <Typography sx={{ fontWeight: 600, color: 'gray' }}>Chưa có tập tin nào</Typography>
+        <Typography className="font-semibold text-gray-500">Chưa có tập tin nào</Typography>
       </Paper>
     </Paper>
   );

@@ -1,6 +1,7 @@
 import { CheckRounded } from '@mui/icons-material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import {
+  Box,
   Divider,
   IconButton,
   ListItemIcon,
@@ -17,9 +18,19 @@ import { useState } from 'react';
 
 const useStyles = makeStyles((theme) => ({
   btnHover: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    transition: 'all .15s',
+    color: 'white',
+    cursor: 'pointer',
+    userSelect: 'none',
+    borderRadius: '0.5rem',
     backgroundColor: theme.palette.primary.main,
     '&:hover': {
       backgroundColor: darken(theme.palette.primary.main, 0.2),
+    },
+    '&:active': {
+      backgroundColor: darken(theme.palette.primary.main, 0.4),
     },
   },
 }));
@@ -41,13 +52,16 @@ const CustomizedMenu = ({ preText }: Props) => {
 
   return (
     <>
-      <span
-        className={`${classes.btnHover} inline-flex cursor-pointer select-none items-center rounded-lg p-0 text-white transition active:bg-green-800`}
-      >
-        <Typography sx={{ px: 2, fontSize: '1rem', fontWeight: 600, lineHeight: '1rem' }}>
+      <Box className={`${classes.btnHover}`}>
+        <Typography sx={{ px: 2, fontSize: '1rem', fontWeight: 500, lineHeight: '1rem' }}>
           {preText}
         </Typography>
-        <Divider className="bg-white" orientation="vertical" flexItem variant="middle" />
+        <Divider
+          sx={{ backgroundColor: 'white' }}
+          orientation="vertical"
+          flexItem
+          variant="middle"
+        />
         <IconButton
           sx={{ p: 0, borderRadius: 0, width: 40, height: 40 }}
           aria-controls="dropdown-menu"
@@ -57,7 +71,7 @@ const CustomizedMenu = ({ preText }: Props) => {
         >
           <ArrowDropDownIcon />
         </IconButton>
-      </span>
+      </Box>
       <Menu
         id="basic-menu"
         anchorEl={anchorEl}

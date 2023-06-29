@@ -11,7 +11,6 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TablePagination,
   TableRow,
   TableSortLabel,
   Toolbar,
@@ -21,94 +20,28 @@ import {
 import { alpha } from '@mui/material/styles';
 import { visuallyHidden } from '@mui/utils';
 import { ellipsisVerticalOutline } from 'ionicons/icons';
-import { Fragment, useMemo, useState } from 'react';
+import { ChangeEvent, useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { HeadCellWithId, Order } from '~/app/modules/shared/common/types';
 import { COMPONENT_SHADOW } from '~/app/modules/shared/constants';
-import SearchFilter from '~/app/modules/shared/presentation/components/SearchFilter';
+import PrimaryPagination from '~/app/modules/shared/presentation/components/Pagination';
 import { formatStatus } from '~/app/modules/shared/utils';
+import { EnhancedTableProps, getComparator, stableSort } from '~/app/modules/shared/utils/table';
+import { UserFilterModel } from '../../domain/models/UserFilterModel';
+import { UserState } from '../../infrastructure/store/types';
+import { UserRoutes } from '../routes';
 
 interface Data {
+  id: number;
   fullName: string;
   email: string;
   className: string;
   roleName: string;
-  joinDate: string;
+  joinedDate: string;
   status: boolean;
 }
 
-function createData(
-  fullName: string,
-  email: string,
-  className: string,
-  roleName: string,
-  joinDate: string,
-  status: boolean
-): Data {
-  return {
-    fullName,
-    email,
-    className,
-    roleName,
-    joinDate,
-    status,
-  };
-}
-
-const rows = [
-  createData('Hauxun', '2011379@dlu.edu.vn', 'CTK44A', 'Sinh viên', '12/12/2022', true),
-  createData('Hauxun 1', '2011379@dlu.edu.vn', 'CTK44A', 'Sinh viên', '12/12/2022', false),
-  createData('Hauxun 2', '2011379@dlu.edu.vn', 'CTK44A', 'Sinh viên', '12/12/2022', true),
-  createData('Hauxun 3', '2011379@dlu.edu.vn', 'CTK44A', 'Sinh viên', '12/12/2022', true),
-  createData('Hauxun 4', '2011379@dlu.edu.vn', 'CTK44A', 'Sinh viên', '12/12/2022', false),
-  createData('Hauxun 5', '2011379@dlu.edu.vn', 'CTK44A', 'Sinh viên', '12/12/2022', false),
-  createData('Hauxun 6', '2011379@dlu.edu.vn', 'CTK44A', 'Sinh viên', '12/12/2022', true),
-  createData('Hauxun 7', '2011379@dlu.edu.vn', 'CTK44A', 'Sinh viên', '12/12/2022', false),
-  createData('Hauxun 8', '2011379@dlu.edu.vn', 'CTK44A', 'Sinh viên', '12/12/2022', true),
-];
-
-function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
-
-type Order = 'asc' | 'desc';
-
-function getComparator<Key extends keyof never>(
-  order: Order,
-  orderBy: Key
-): (
-  a: { [key in Key]: number | string | boolean },
-  b: { [key in Key]: number | string | boolean }
-) => number {
-  return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) {
-  const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) {
-      return order;
-    }
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
-}
-
-interface HeadCell {
-  id: keyof Data;
-  label: string;
-  align: 'left' | 'center' | 'right' | 'justify' | 'inherit';
-  minWidth?: number | string;
-}
-
-const headCells: readonly HeadCell[] = [
+const headCells: readonly HeadCellWithId<keyof Data>[] = [
   {
     id: 'fullName',
     align: 'left',
@@ -128,7 +61,7 @@ const headCells: readonly HeadCell[] = [
     minWidth: '15%',
   },
   {
-    id: 'joinDate',
+    id: 'joinedDate',
     align: 'left',
     label: 'Ngày tham gia',
     minWidth: '15%',
@@ -141,16 +74,7 @@ const headCells: readonly HeadCell[] = [
   },
 ];
 
-interface EnhancedTableProps {
-  numSelected: number;
-  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Data) => void;
-  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  order: Order;
-  orderBy: string;
-  rowCount: number;
-}
-
-function EnhancedTableHead(props: EnhancedTableProps) {
+function EnhancedTableHead(props: EnhancedTableProps<keyof Data>) {
   const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
   const createSortHandler = (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
     onRequestSort(event, property);
@@ -158,7 +82,13 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 
   return (
     <TableHead>
-      <TableRow>
+      <TableRow
+        sx={{
+          '& .MuiTableCell-root': {
+            backgroundColor: 'white',
+          },
+        }}
+      >
         <TableCell
           padding="checkbox"
           sx={{
@@ -244,12 +174,48 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   );
 }
 
-export default function UserList() {
+type UserListProps = {
+  userState: UserState;
+  fetchUsers: (model: UserFilterModel) => void;
+  setFilter: (model: UserFilterModel) => void;
+};
+
+export default function UserList({ userState, fetchUsers, setFilter }: UserListProps) {
   const [order, setOrder] = useState<Order>('asc');
   const [orderBy, setOrderBy] = useState<keyof Data>('fullName');
   const [selected, setSelected] = useState<readonly string[]>([]);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [users, setUsers] = useState<Data[]>([]);
+  const { data, filter, pagination } = userState;
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const newUser = data.map(
+      (u) =>
+        ({
+          id: u.id,
+          fullName: u.fullName,
+          email: u.email,
+          className: u.gradeName,
+          roleName: u.roles.join(', '),
+          joinedDate: u.joinedDate.toLocaleString(),
+          status: u.lockEnable,
+        } as Data)
+    );
+
+    setUsers(newUser);
+  }, [data]);
+
+  useEffect(() => {
+    fetchUsers(filter);
+  }, [fetchUsers, filter]);
+
+  useEffect(() => {
+    setFilter({ pageNumber: 1, pageSize: 10 } as UserFilterModel);
+  }, [setFilter]);
+
+  const handlePageChange = (e: ChangeEvent<unknown>, page: number) => {
+    setFilter({ ...filter, pageNumber: page } as UserFilterModel);
+  };
 
   const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Data) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -259,7 +225,7 @@ export default function UserList() {
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelected = rows.map((n) => n.fullName);
+      const newSelected = users.map((u) => u.fullName);
       setSelected(newSelected);
       return;
     }
@@ -286,166 +252,143 @@ export default function UserList() {
     setSelected(newSelected);
   };
 
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
   const isSelected = (name: string) => selected.indexOf(name) !== -1;
 
   // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+  const emptyRows = 0; // page > 0 ? Math.max(0, (1 + 0) * 10 - users.length) : 0;
 
   const visibleRows = useMemo(
-    () =>
-      stableSort(rows, getComparator(order, orderBy)).slice(
-        page * rowsPerPage,
-        page * rowsPerPage + rowsPerPage
-      ),
-    [order, orderBy, page, rowsPerPage]
+    () => stableSort(users, getComparator(order, orderBy)).slice(0 * 10, 0 * 10 + 10),
+    [order, orderBy, users]
   );
 
   return (
-    <Fragment>
-      <SearchFilter
-        placeholderSearch="Tìm kiếm tài khoản"
-        onChangeInput={(event) => console.log(event.target.value)}
-      />
-      <Paper
-        sx={{ width: '100%', overflow: 'hidden', mt: 4, boxShadow: COMPONENT_SHADOW }}
-        elevation={0}
+    <Paper sx={{ width: '100%', overflow: 'hidden', boxShadow: COMPONENT_SHADOW }} elevation={0}>
+      <EnhancedTableToolbar numSelected={selected.length} />
+      <TableContainer
+        sx={{
+          maxHeight: 440,
+          '&::-webkit-scrollbar': {
+            width: 6,
+          },
+          '&::-webkit-scrollbar-track': {
+            backgroundColor: 'transparent',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            backgroundColor: 'transparent',
+            borderRadius: 4,
+            transition: 'background-color 0.3s ease',
+          },
+          '&:hover::-webkit-scrollbar-track': {
+            backgroundColor: 'transparent',
+          },
+          '&:hover::-webkit-scrollbar-thumb': {
+            backgroundColor: '#00000033',
+          },
+        }}
       >
-        <EnhancedTableToolbar numSelected={selected.length} />
-        <TableContainer
-          sx={{
-            maxHeight: 440,
-            '&::-webkit-scrollbar': {
-              width: 6,
-            },
-            '&::-webkit-scrollbar-track': {
-              backgroundColor: 'transparent',
-            },
-            '&::-webkit-scrollbar-thumb': {
-              backgroundColor: 'transparent',
-              borderRadius: 4,
-              transition: 'background-color 0.3s ease',
-            },
-            '&:hover::-webkit-scrollbar-track': {
-              backgroundColor: 'transparent',
-            },
-            '&:hover::-webkit-scrollbar-thumb': {
-              backgroundColor: '#00000033',
-            },
-          }}
-        >
-          <Table stickyHeader sx={{ minWidth: 750 }} aria-labelledby="sticky table">
-            <EnhancedTableHead
-              numSelected={selected.length}
-              order={order}
-              orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
-              onRequestSort={handleRequestSort}
-              rowCount={rows.length}
-            />
-            <TableBody>
-              {visibleRows.map((row, index) => {
-                const isItemSelected = isSelected(row.fullName);
-                const labelId = `enhanced-table-checkbox-${index}`;
-                const { name, color } = formatStatus(row.status);
+        <Table stickyHeader sx={{ minWidth: 750 }} aria-labelledby="sticky table">
+          <EnhancedTableHead
+            numSelected={selected.length}
+            order={order}
+            orderBy={orderBy}
+            onSelectAllClick={handleSelectAllClick}
+            onRequestSort={handleRequestSort}
+            rowCount={users.length}
+          />
+          <TableBody>
+            {visibleRows.map((row, index) => {
+              const isItemSelected = isSelected(row.fullName);
+              const labelId = `enhanced-table-checkbox-${index}`;
+              const { name, color } = formatStatus(row.status);
 
-                return (
-                  <TableRow
-                    hover
-                    onClick={(event) => handleClick(event, row.fullName)}
-                    role="checkbox"
-                    aria-checked={isItemSelected}
-                    tabIndex={-1}
-                    key={row.fullName}
-                    selected={isItemSelected}
-                    sx={{
-                      cursor: 'pointer',
-                      height: '68px',
-                      '& .MuiTableCell-root': {
-                        border: 0,
-                        py: 1,
-                      },
-                      '&.MuiTableRow-hover:hover': {
-                        bgcolor: (theme) =>
-                          alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
-                      },
-                    }}
-                  >
-                    <TableCell
-                      padding="checkbox"
-                      sx={{
-                        '& .MuiCheckbox-root': {
-                          color: 'var(--primary-green)',
-                          ml: 3,
-                        },
-                      }}
-                    >
-                      <Checkbox
-                        checked={isItemSelected}
-                        inputProps={{
-                          'aria-labelledby': labelId,
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell component="th" id={labelId} scope="row" padding="normal">
-                      <Typography>{row.fullName}</Typography>
-                      <Typography variant="caption" className="text-blue-400">
-                        {row.email}
-                      </Typography>
-                    </TableCell>
-                    <TableCell align="left">{row.className}</TableCell>
-                    <TableCell align="left">{row.roleName}</TableCell>
-                    <TableCell align="left">{row.joinDate}</TableCell>
-                    <TableCell align="center">
-                      <Button
-                        className={`${color} w-10/12 rounded-lg px-4 py-2 text-base font-bold normal-case`}
-                      >
-                        {name}
-                      </Button>
-                    </TableCell>
-                    <TableCell align="center">
-                      <IconButton color="default">
-                        <IonIcon icon={ellipsisVerticalOutline} />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-              {emptyRows > 0 && (
+              return (
                 <TableRow
-                  style={{
-                    height: 68 * emptyRows,
+                  hover
+                  role="checkbox"
+                  aria-checked={isItemSelected}
+                  tabIndex={-1}
+                  key={row.fullName}
+                  selected={isItemSelected}
+                  onClick={(e) => navigate(`/${UserRoutes.USERS}/${row.id}`)}
+                  sx={{
+                    cursor: 'pointer',
+                    height: '68px',
+                    '& .MuiTableCell-root': {
+                      border: 0,
+                      py: 1,
+                    },
+                    '&.MuiTableRow-hover:hover': {
+                      bgcolor: (theme) =>
+                        alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
+                    },
                   }}
                 >
                   <TableCell
-                    colSpan={7}
+                    onClick={(event) => handleClick(event, row.fullName)}
+                    padding="checkbox"
                     sx={{
-                      border: 0,
+                      '& .MuiCheckbox-root': {
+                        color: 'var(--primary-green)',
+                        ml: 3,
+                      },
                     }}
-                  />
+                  >
+                    <Checkbox
+                      checked={isItemSelected}
+                      inputProps={{
+                        'aria-labelledby': labelId,
+                      }}
+                    />
+                  </TableCell>
+                  <TableCell component="th" id={labelId} scope="row" padding="normal">
+                    <Typography>{row.fullName}</Typography>
+                    <Typography variant="caption" className="text-blue-400">
+                      {row.email}
+                    </Typography>
+                  </TableCell>
+                  <TableCell align="left">{row.className}</TableCell>
+                  <TableCell align="left">{row.roleName}</TableCell>
+                  <TableCell align="left">
+                    {new Date(row.joinedDate).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell align="center">
+                    <Button
+                      className={`${color} w-10/12 rounded-lg px-4 py-2 text-base font-bold normal-case`}
+                    >
+                      {name}
+                    </Button>
+                  </TableCell>
+                  <TableCell align="center">
+                    <IconButton color="default">
+                      <IonIcon icon={ellipsisVerticalOutline} />
+                    </IconButton>
+                  </TableCell>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[10, 25, 100]}
-          component="div"
-          count={rows.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Paper>
-    </Fragment>
+              );
+            })}
+            {emptyRows > 0 && (
+              <TableRow
+                style={{
+                  height: 68 * emptyRows,
+                }}
+              >
+                <TableCell
+                  colSpan={7}
+                  sx={{
+                    border: 0,
+                  }}
+                />
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <PrimaryPagination
+        count={Math.ceil((pagination?.totalItemCount ?? 0) / (pagination?.pageSize ?? 1))}
+        page={(pagination?.pageIndex ?? 0) + 1}
+        onChange={handlePageChange}
+      />
+    </Paper>
   );
 }

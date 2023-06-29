@@ -1,9 +1,10 @@
 import { User } from "~/app/modules/user/domain/models/User";
 import { TopicRank } from "./TopicRank";
-import { SpecificAward } from "./SpecificAward";
-import { Comment } from "~/app/modules/role copy/domain/services/CommentServices";
+import { Comment } from "~/app/modules/comment/domain/models/Comment";
 import { TopicPhoto } from "./TopicPhoto";
 import { TopicVideo } from "./TopicVideo";
+import { UserTopicRating } from "~/app/modules/user/domain/models/UserTopicRating";
+import { SpecificAward } from "~/app/modules/rankAward/domain/models/SpecificAward";
 
 export interface Topic {
   id: number;
@@ -24,7 +25,7 @@ export interface Topic {
   specificAward: SpecificAward;
   topicRank: TopicRank;
   leader: User;
-  userTopicRatings: User[];
+  userTopicRatings: UserTopicRating[];
   comments: Comment[];
   users: User[];
   topicPhotos: TopicPhoto[];

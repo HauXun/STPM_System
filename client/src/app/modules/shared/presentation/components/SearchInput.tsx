@@ -1,30 +1,38 @@
 import { IonIcon } from '@ionic/react';
-import { IconButton, InputBase, Paper } from '@mui/material';
+import { IconButton, InputBase, Paper, PaperProps, SxProps, TextFieldProps, Theme } from '@mui/material';
 import { searchOutline } from 'ionicons/icons';
 import { COMPONENT_SHADOW } from '~/app/modules/shared/constants';
+import { centerFlexItems } from '../../utils';
 
-type Props = {
-  /**
-   * Injected by the documentation to work in an iframe.
-   * You won't need it on your project.
-   */
-  placeholder?: string;
-  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
-};
+export type Props = PaperProps &
+  Pick<TextFieldProps, 'onChange'> & {
+    placeholder?: string;
+  };
 
-export default function SearchInput({ placeholder, onChange }: Props) {
+export default function SearchInput({
+  sx,
+  className,
+  placeholder,
+  children,
+  onChange,
+  ...props
+}: Props) {
   return (
     <Paper
+      className={className}
       component="form"
       sx={{
-        display: 'flex',
-        alignItems: 'center',
-        width: 560,
-        borderRadius: 50,
-        boxShadow: COMPONENT_SHADOW,
+        ...({
+          width: 560,
+          borderRadius: 50,
+          boxShadow: COMPONENT_SHADOW,
+          p: 0.5,
+          ...centerFlexItems({}),
+          ...sx,
+        } as SxProps<Theme>),
       }}
     >
-      <IconButton className='text-2xl' sx={{ p: '10px' }} aria-label="menu">
+      <IconButton className="text-2xl" sx={{ p: '5px' }} aria-label="menu">
         <IonIcon icon={searchOutline} />
       </IconButton>
       <InputBase
@@ -34,6 +42,7 @@ export default function SearchInput({ placeholder, onChange }: Props) {
         inputProps={{ 'aria-label': 'tìm kiếm' }}
         onChange={onChange}
       />
+      {children}
     </Paper>
   );
 }
