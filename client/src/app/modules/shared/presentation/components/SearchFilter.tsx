@@ -1,28 +1,34 @@
 import { IonIcon } from '@ionic/react';
-import { COMPONENT_SHADOW } from '~/app/modules/shared/constants';
+import { BoxProps, Button, ButtonProps } from '@mui/material';
 import { filterOutline } from 'ionicons/icons';
-import { Box, Button } from '@mui/material';
-import SearchInput from './SearchInput';
+import BoxFlexCenter from '~/app/modules/core/presentation/containers/BoxFlexCenter';
+import { COMPONENT_SHADOW } from '~/app/modules/shared/constants';
+import SearchInput, { Props as SearchInputProps } from './SearchInput';
 
-type Props = {
-  placeholderSearch?: string;
-  onClickFilter?: (event: React.MouseEvent<unknown>) => void;
-  onChangeInput?: (event: React.ChangeEvent<HTMLInputElement>) => void;
-};
+type Props = BoxProps &
+  Pick<SearchInputProps, 'onChange' | 'placeholder'> &
+  Pick<ButtonProps, 'onClick'> & {
+  };
 
-export default function SearchFilter({placeholderSearch, onClickFilter, onChangeInput}: Props) {
+export default function SearchFilter({
+  sx,
+  className,
+  placeholder,
+  onClick,
+  onChange,
+}: Props) {
   return (
-    <Box sx={{ display: 'flex', width: '100%', justifyContent: 'space-between' }}>
-      <SearchInput placeholder={placeholderSearch} onChange={onChangeInput} />
+    <BoxFlexCenter className={className} sx={{ width: '100%', ...sx }}>
+      <SearchInput placeholder={placeholder} onChange={onChange} />
       <Button
         className="border-0 bg-white font-semibold text-black"
         sx={{ textTransform: 'none', boxShadow: COMPONENT_SHADOW }}
         variant="outlined"
         endIcon={<IonIcon icon={filterOutline} />}
-        onClick={onClickFilter}
+        onClick={onClick}
       >
         Lọc
       </Button>
-    </Box>
+    </BoxFlexCenter>
   );
 }

@@ -1,4 +1,4 @@
-import { Menu, MenuItem, Typography } from '@mui/material';
+import { ButtonProps, Menu, MenuItem, TextFieldProps, Typography } from '@mui/material';
 import { CSSProperties } from '@mui/styles';
 import { useState } from 'react';
 import CancelButton from '~/app/modules/core/presentation/components/CancelButton';
@@ -6,17 +6,17 @@ import PrimaryButton from '~/app/modules/core/presentation/components/PrimaryBut
 import PrimaryInput from '~/app/modules/core/presentation/components/PrimaryInput';
 import BoxInput from '~/app/modules/core/presentation/containers/BoxInput';
 
-type Props = {
-  sx?: CSSProperties;
-  value?: string | number;
-  list?: { id: string | number; value: string | number }[];
-  onClick?: (event: React.MouseEvent<unknown>) => void;
-  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
-};
+type Props = Pick<ButtonProps, 'onClick'> &
+  Pick<TextFieldProps, 'onChange'> & {
+    sx?: CSSProperties;
+    value?: string;
+    list?: { id: string | number; value: string | number }[];
+  };
 
 export default function DropdownInputEdit({ sx, value, list, onClick, onChange }: Props) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [isEdit, setIsEdit] = useState(false);
+  const [tempValue, setTempValue] = useState('');
 
   const handleOpenMenu = (event: React.MouseEvent<HTMLDivElement>) => {
     setAnchorEl(event.currentTarget);
@@ -26,11 +26,12 @@ export default function DropdownInputEdit({ sx, value, list, onClick, onChange }
     setAnchorEl(null);
   };
 
-  const handleMenuItemClick = (newValue: string | number) => {
+  const handleMenuItemClick = (newValue: { id: string | number; value: string | number }) => {
     // Create a synthetic event object
     const event = {
       target: {
-        value: newValue,
+        id: newValue.id,
+        value: newValue.value,
       },
     } as React.ChangeEvent<HTMLInputElement>;
 
@@ -67,22 +68,38 @@ export default function DropdownInputEdit({ sx, value, list, onClick, onChange }
         {list &&
           list.length > 0 &&
           list.map((item, i) => (
-            <MenuItem key={i} onClick={() => handleMenuItemClick(item.id)}>
+            <MenuItem key={i} onClick={() => handleMenuItemClick(item)}>
               {item.value}
             </MenuItem>
           ))}
       </Menu>
       {isEdit ? (
         <>
-          <PrimaryButton sx={{ mr: 1 }} text="Lưu" onClick={onClick} />
+          <PrimaryButton
+            sx={{
+              mr: 1,
+            }}
+            text="Lưu"
+            onClick={(e) => {
+              setIsEdit(!isEdit);
+              onClick?.(e);
+            }}
+          />
           <CancelButton
             onClick={(e) => {
               setIsEdit(!isEdit);
+              onChange?.({ target: { value: tempValue } } as React.ChangeEvent<HTMLInputElement>);
             }}
           />
         </>
       ) : (
-        <PrimaryButton text="Sửa" onClick={(e) => setIsEdit(!isEdit)} />
+        <PrimaryButton
+          text="Sửa"
+          onClick={(e) => {
+            setIsEdit(!isEdit);
+            setTempValue(value ?? '');
+          }}
+        />
       )}
     </BoxInput>
   );
