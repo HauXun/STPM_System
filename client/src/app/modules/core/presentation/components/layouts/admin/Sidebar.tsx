@@ -156,6 +156,36 @@ const StyledNavLink = styled(NavLink)(({ theme }) => ({
   },
 }));
 
+const StyledNavLink = styled(NavLink)(({ theme }) => ({
+  '&.active': {
+    [`& .${treeItemClasses.root}`]: {
+      [`& .${treeItemClasses.content}`]: {
+        backgroundColor: `var(--tree-view-bg-color, ${theme.palette.action.selected})`,
+        color: 'var(--tree-view-color)',
+        fontWeight: theme.typography.fontWeightBold,
+        '&.Mui-focused, &.Mui-selected': {
+          backgroundColor: `var(--tree-view-bg-color, ${theme.palette.action.selected})`,
+          color: 'var(--tree-view-color)',
+          fontWeight: theme.typography.fontWeightBold,
+        },
+      },
+    },
+  },
+  '&': {
+    [`& .${treeItemClasses.root}`]: {
+      [`& .${treeItemClasses.content}`]: {
+        '&.Mui-focused, &.Mui-selected': {
+          backgroundColor: 'inherit',
+          color: 'inherit',
+        },
+        '&.Mui-selected:hover': {
+          backgroundColor: theme.palette.action.hover,
+        },
+      },
+    },
+  },
+}));
+
 type Props = {
   /**
    * Injected by the documentation to work in an iframe.

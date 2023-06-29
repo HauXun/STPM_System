@@ -28,3 +28,5 @@ export const defaultPostService = new PostService(new PostRepositoryImpl(new Pos
 export const defaultTagService = new TagService(new TagRepositoryImpl(new TagDataSource()));
 
 export const defaultRankAwardService = new RankAwardService(new RankAwardRepositoryImpl(new RankAwardDataSource()));
+
+export const defaultTopicService = new TopicService(new TopicRepositoryImpl(new TopicDataSource()));

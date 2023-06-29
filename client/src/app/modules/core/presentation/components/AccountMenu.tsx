@@ -13,7 +13,6 @@ import {
 import { Fragment, useState } from 'react';
 import { ACCOUNT_MENU_SIZE } from '~/app/modules/shared/constants';
 import logo from '~/main/assets/logo_app.png';
-import BoxFlexCenter from '../containers/BoxFlexCenter';
 
 const StyledMenu = styled(Menu)(({ theme }) => ({
   '& .MuiMenuItem-root': {

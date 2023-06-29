@@ -16,6 +16,7 @@ export const formatTopicStatus = ({
   if (registered)
     return { name: 'Đã đăng ký', color: 'bg-green-100 hover:bg-green-200 text-green-600' };
 
+
   return { name: 'Chờ duyệt', color: 'bg-yellow-100 hover:bg-amber-100 text-amber-500' };
 };
 
