@@ -1,5 +1,3 @@
-import { Role } from "~/app/modules/role/domain/models/Role";
-
 export interface User {
   id: number;
   fullName: string;
@@ -11,6 +9,12 @@ export interface User {
   gradeName: string;
   email: string;
   phoneNumber: string;
-  lockoutEnabled: boolean;
-  role: Role;
+  lockEnable: boolean;
+  roles: string[];
+
+  postCount: number;
+  topicCount: number;
+  notifyCount: number;
+  commentCount: number;
+  topicRatingCount: number;
 }
