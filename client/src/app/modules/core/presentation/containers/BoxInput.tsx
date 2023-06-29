@@ -1,24 +1,17 @@
-import { Box } from '@mui/material';
-import { CSSProperties } from '@mui/styles';
-import { ReactNode } from 'react';
+import BoxFlexCenter, { Props as BoxFlexCenterProps } from './BoxFlexCenter';
 
-type Props = {
-  sx?: CSSProperties;
-  children?: ReactNode;
-};
+type Props = BoxFlexCenterProps & {};
 
-export default function BoxInput({ sx, children }: Props) {
+export default function BoxInput({ sx, className, children }: Props) {
   return (
-    <Box
+    <BoxFlexCenter
+      className={className}
       sx={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
         height: 35,
         ...sx,
       }}
     >
       {children}
-    </Box>
+    </BoxFlexCenter>
   );
 }

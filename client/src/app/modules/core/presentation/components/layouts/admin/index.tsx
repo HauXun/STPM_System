@@ -12,6 +12,7 @@ export default function AdminLayout({}: Props) {
     <Box sx={{ display: 'flex' }}>
       <Header />
       <Sidebar />
+      <Box sx={{ height: '100vh' }} aria-label="scrollbar temp" />
       <Box
         component="main"
         sx={{
@@ -28,24 +29,6 @@ export default function AdminLayout({}: Props) {
           autoHideDuration={200}
         >
           <Box sx={{ p: 3 }}>
-            {/* <Notification /> */}
-            {/* <Grid container spacing={2}>
-              <Grid item xs={5}>
-                <Paper>
-                <Typography>Lorem1000</Typography>
-                xs=8
-                </Paper>
-              </Grid>
-              <Grid item xs={7}>
-                <Paper>
-                <Typography>odaijsodi</Typography>
-                xs=7
-                </Paper>
-              </Grid>
-            </Grid> */}
-            {/* <TopicRegisterList /> */}
-            {/* <TopicRegisterDraft /> */}
-            {/* <Topic /> */}
             <Outlet />
           </Box>
         </CustomScrollbar>

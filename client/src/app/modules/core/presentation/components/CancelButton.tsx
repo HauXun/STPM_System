@@ -1,14 +1,11 @@
-import { Button } from '@mui/material';
+import { Button, ButtonProps } from '@mui/material';
 
-type Props = {
-  onClick?: (event: React.MouseEvent<unknown>) => void;
-};
-
-export default function CancelButton({ onClick }: Props) {
+export default function CancelButton({ sx, className, ...props }: ButtonProps) {
   return (
     <Button
-      className="h-full rounded-lg bg-gray-200 font-bold normal-case text-gray-700"
-      onClick={onClick}
+      className={`h-full rounded-lg bg-gray-200 font-bold normal-case text-gray-700 ${className}`}
+      sx={{ ...sx }}
+      {...props}
     >
       Huỷ
     </Button>
